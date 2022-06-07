@@ -4,9 +4,14 @@ import { Form } from "react-bootstrap";
 export interface RangeProps extends FormRangeProps {
   formatValue?: (x: string) => string;
   value: string;
+  isInvalid?: boolean;
 }
 
-export default function FormRange({ formatValue, ...props }: RangeProps) {
+export default function FormRange({
+  formatValue,
+  isInvalid,
+  ...props
+}: RangeProps) {
   return (
     <div className="d-flex">
       <Form.Range {...props} />

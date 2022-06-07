@@ -1,6 +1,6 @@
 import { Formik } from "formik";
 import * as yup from "yup";
-import { Form, Row, Col, Container, Alert } from "react-bootstrap";
+import { Form, Row, Col, Container, Alert, Modal } from "react-bootstrap";
 import FormGroup from "../components/FormGroup";
 import FormTextArea from "../components/FormTextArea";
 import {
@@ -10,18 +10,33 @@ import {
   FormSelectProps,
 } from "../components/FormSelect";
 import topics from "../lib/topics";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoadingButton from "../components/LoadingButton";
 import { getSummaries } from "../lib/client";
 import Results, { ResultsProps } from "../components/Results";
 import { GenerateRequest } from "../lib/types";
 import models from "../lib/models";
 import FormRange from "../components/FormRange";
+import { GetStaticProps } from "next";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { Readable } from "stream";
 
-export default function Index() {
+const s3Client = new S3Client({ region: "us-east-1" });
+
+interface IndexProps {
+  warningText: string;
+  warningHeading: string;
+}
+
+export default function Index({ warningHeading, warningText }: IndexProps) {
   const [status, setStatus] = useState("ready");
   const [message, setMessage] = useState<string | null>(null);
   const [results, setResults] = useState<ResultsProps | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+
+  useEffect(() => {
+    setShowAlert(process.env.NEXT_PUBLIC_STAGE !== "stable");
+  }, []);
 
   async function handleSubmit(values: GenerateRequest) {
     setStatus("loading");
@@ -149,6 +164,36 @@ export default function Index() {
         </Formik>
       </div>
       {results && <Results {...results} />}
+      <Modal show={showAlert} onHide={() => setShowAlert(false)}>
+        <Alert
+          variant="danger"
+          className="mb-0"
+          dismissible
+          onClose={() => setShowAlert(false)}
+        >
+          <Alert.Heading>{warningHeading}</Alert.Heading>
+          <p className="mb-0">{warningText}</p>
+        </Alert>
+      </Modal>
     </Container>
   );
 }
+
+export const getStaticProps: GetStaticProps<IndexProps> = async () => {
+  const response = await s3Client.send(
+    new GetObjectCommand({
+      Bucket: "newsrevealer-config",
+      Key: "warnings.json",
+    })
+  );
+  const chunks = [];
+  for await (const chunk of response.Body as Readable) {
+    chunks.push(chunk);
+  }
+  const warnings = JSON.parse(Buffer.concat(chunks).toString());
+
+  return {
+    props: warnings[process.env.NEXT_PUBLIC_STAGE],
+    revalidate: 3600,
+  };
+};

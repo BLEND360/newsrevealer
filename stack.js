@@ -6,6 +6,7 @@ const { Stack } = require("aws-cdk-lib");
 // } = require("aws-cdk-lib/aws-certificatemanager");
 const { NextJSLambdaEdge } = require("@sls-next/cdk-construct");
 const { Runtime } = require("aws-cdk-lib/aws-lambda");
+const { PolicyStatement } = require("aws-cdk-lib/aws-iam");
 
 module.exports = class AppStack extends Stack {
   constructor(scope, id, props) {
@@ -28,5 +29,11 @@ module.exports = class AppStack extends Stack {
       // },
       runtime: Runtime.NODEJS_14_X,
     });
+    app.edgeLambdaRole.addToPolicy(
+      new PolicyStatement({
+        actions: ["s3:GetObject"],
+        resources: ["arn:aws:s3:::newsrevealer-config/*"],
+      })
+    );
   }
 };

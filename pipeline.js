@@ -2,16 +2,17 @@ const { Stack } = require("aws-cdk-lib");
 const {
   CodePipeline,
   CodePipelineSource,
-  ShellStep,
+  CodeBuildStep,
 } = require("aws-cdk-lib/pipelines");
 const NewsRevealer = require("./stage");
+const { PolicyStatement } = require("aws-cdk-lib/aws-iam");
 
 module.exports = class PipelineStack extends Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
 
     const pipeline = new CodePipeline(this, "pipeline", {
-      synth: new ShellStep("synth", {
+      synth: new CodeBuildStep("synth", {
         input: CodePipelineSource.connection(
           "BLEND360/newsrevealer",
           props.branch,
@@ -25,6 +26,12 @@ module.exports = class PipelineStack extends Stack {
           "export $(cat .env | xargs)",
           "node build.mjs",
           "yarn cdk synth",
+        ],
+        rolePolicyStatements: [
+          new PolicyStatement({
+            actions: ["s3:GetObject"],
+            resources: ["arn:aws:s3:::newsrevealer-config/*"],
+          }),
         ],
       }),
     });
