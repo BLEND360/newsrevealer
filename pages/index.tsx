@@ -24,8 +24,8 @@ import { Readable } from "stream";
 const s3Client = new S3Client({ region: "us-east-1" });
 
 interface IndexProps {
-  warningText: string;
-  warningHeading: string;
+  warningText?: string;
+  warningHeading?: string;
 }
 
 export default function Index({ warningHeading, warningText }: IndexProps) {
@@ -193,7 +193,7 @@ export const getStaticProps: GetStaticProps<IndexProps> = async () => {
   const warnings = JSON.parse(Buffer.concat(chunks).toString());
 
   return {
-    props: warnings[process.env.NEXT_PUBLIC_STAGE],
+    props: warnings[process.env.NEXT_PUBLIC_STAGE] ?? {},
     revalidate: 3600,
   };
 };
