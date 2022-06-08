@@ -17,7 +17,7 @@ export default function Results({ results, model }: ResultsProps) {
             <Card.Title>Article Text</Card.Title>
           </Card.Header>
           <Card.Body className={styles.articleText}>
-            <Card.Text>{results.body}</Card.Text>
+            <Card.Text>{results.article_body}</Card.Text>
           </Card.Body>
         </Card>
       </Col>
@@ -33,12 +33,12 @@ export default function Results({ results, model }: ResultsProps) {
                     </Card.Header>
                     <Card.Body className={styles.topicText}>
                       {model === "short" && (
-                        <Card.Text>{results.summary_dt[value]}</Card.Text>
+                        <Card.Text>{results.output_dt[value]}</Card.Text>
                       )}
                       {model === "long" && (
                         <>
                           <Card.Text>
-                            <strong>{results.summary_dt[value]}</strong>
+                            <strong>{results.output_dt[value]}</strong>
                           </Card.Text>
                           <Card.Text>
                             {results.long_summary_dt[value]}

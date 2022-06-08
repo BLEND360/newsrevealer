@@ -10,7 +10,7 @@ export async function getSummaries(
     200,
     400
   )(
-    "https://dzvi3lni3ix3yzdjcsteia6mne0mkvrq.lambda-url.us-east-1.on.aws/",
+    "https://yqecfhf4pczaevfcfej6wognsy0ifmbf.lambda-url.us-east-1.on.aws/",
     input
   );
 }
