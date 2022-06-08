@@ -29,35 +29,35 @@ export default function Results({ results, model }: ResultsProps) {
                 <Col xs={12} sm={6}>
                   <Card className="mb-3">
                     <Card.Header>
-                      <Card.Title>{label} Summary</Card.Title>
+                      <Card.Title>{label} Classified Text</Card.Title>
                     </Card.Header>
                     <Card.Body className={styles.topicText}>
-                      {model === "short" && (
-                        <Card.Text>{results.output_dt[value]}</Card.Text>
-                      )}
-                      {model === "long" && (
-                        <>
-                          <Card.Text>
-                            <strong>{results.output_dt[value]}</strong>
-                          </Card.Text>
-                          <Card.Text>
-                            {results.long_summary_dt[value]}
-                          </Card.Text>
-                        </>
-                      )}
-                      {model === "parrot" && (
-                        <Card.Text>{results.parrot_dt[value]}</Card.Text>
-                      )}
+                      <Card.Text>{results.sentences_dt?.[value]}</Card.Text>
                     </Card.Body>
                   </Card>
                 </Col>
                 <Col xs={12} sm={6}>
                   <Card className="mb-3">
                     <Card.Header>
-                      <Card.Title>{label} Classified Text</Card.Title>
+                      <Card.Title>{label} Summary</Card.Title>
                     </Card.Header>
                     <Card.Body className={styles.topicText}>
-                      <Card.Text>{results.sentences_dt[value]}</Card.Text>
+                      {model === "short" && (
+                        <Card.Text>{results.output_dt?.[value]}</Card.Text>
+                      )}
+                      {model === "long" && (
+                        <>
+                          <Card.Text>
+                            <strong>{results.output_dt?.[value]}</strong>
+                          </Card.Text>
+                          <Card.Text>
+                            {results.long_summary_dt?.[value]}
+                          </Card.Text>
+                        </>
+                      )}
+                      {model === "parrot" && (
+                        <Card.Text>{results.parrot_dt?.[value]}</Card.Text>
+                      )}
                     </Card.Body>
                   </Card>
                 </Col>
