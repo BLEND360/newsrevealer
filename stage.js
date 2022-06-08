@@ -6,8 +6,8 @@ module.exports = class NewsRevealer extends Stage {
     super(scope, id, props);
 
     new AppStack(this, "app", {
-      // domain: props.domain,
-      // hostedZone: props.hostedZone,
+      domain: props.domain,
+      hostedZone: props.hostedZone,
     });
   }
 };

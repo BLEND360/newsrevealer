@@ -39,8 +39,8 @@ module.exports = class PipelineStack extends Stack {
     pipeline.addStage(
       new NewsRevealer(this, "newsrevealer", {
         env: props.env,
-        // domain: props.domain,
-        // hostedZone: props.hostedZone,
+        domain: props.domain,
+        hostedZone: props.hostedZone,
       })
     );
   }

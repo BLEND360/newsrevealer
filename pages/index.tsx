@@ -75,7 +75,7 @@ export default function Index({ warningHeading, warningText }: IndexProps) {
             url: "",
             topics: [],
             model: "short",
-            confidence: 0,
+            confidence: 0.6,
           }}
           onSubmit={handleSubmit}
           validationSchema={yup.object({
