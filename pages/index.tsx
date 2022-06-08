@@ -18,21 +18,23 @@ import { GenerateRequest } from "../lib/types";
 import models from "../lib/models";
 import FormRange from "../components/FormRange";
 import { GetStaticProps } from "next";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { Readable } from "stream";
-
-const s3Client = new S3Client({ region: "us-east-1" });
+import Select from "react-select";
+import { getConfig } from "../lib/s3";
 
 interface IndexProps {
-  warningText?: string;
-  warningHeading?: string;
+  warning: {
+    warningText?: string;
+    warningHeading?: string;
+  } | null;
+  domains: string[];
 }
 
-export default function Index({ warningHeading, warningText }: IndexProps) {
+export default function Index({ warning, domains }: IndexProps) {
   const [status, setStatus] = useState("ready");
   const [message, setMessage] = useState<string | null>(null);
   const [results, setResults] = useState<ResultsProps | null>(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [showDomains, setShowDomains] = useState(true);
 
   useEffect(() => {
     setShowAlert(process.env.NEXT_PUBLIC_STAGE !== "stable");
@@ -89,12 +91,25 @@ export default function Index({ warningHeading, warningText }: IndexProps) {
             <Form noValidate onSubmit={handleSubmit}>
               <Row>
                 <Col xs={12} md={6} lg={8}>
-                  <FormGroup
-                    name="url"
-                    as={FormTextArea}
-                    label="News URL"
-                    {...{ rows: "7" }} // cheating to get around react-bootstrap's bad type definitions
-                  />
+                  {showDomains ? (
+                    <Form.Group controlId="domain" className="mb-3">
+                      <Form.Label>Domain</Form.Label>
+                      <Select
+                        className="w-100"
+                        options={domains.map((x) => ({ value: x, label: x }))}
+                        onChange={() => setShowDomains(false)}
+                        value={null}
+                        id="domain"
+                      />
+                    </Form.Group>
+                  ) : (
+                    <FormGroup
+                      name="url"
+                      as={FormTextArea}
+                      label="News URL"
+                      {...{ rows: "7" }} // cheating to get around react-bootstrap's bad type definitions
+                    />
+                  )}
                 </Col>
                 <Col xs={12} md={6} lg={4}>
                   <FormGroup<
@@ -171,8 +186,8 @@ export default function Index({ warningHeading, warningText }: IndexProps) {
           dismissible
           onClose={() => setShowAlert(false)}
         >
-          <Alert.Heading>{warningHeading}</Alert.Heading>
-          <p className="mb-0">{warningText}</p>
+          <Alert.Heading>{warning?.warningHeading}</Alert.Heading>
+          <p className="mb-0">{warning?.warningText}</p>
         </Alert>
       </Modal>
     </Container>
@@ -180,20 +195,14 @@ export default function Index({ warningHeading, warningText }: IndexProps) {
 }
 
 export const getStaticProps: GetStaticProps<IndexProps> = async () => {
-  const response = await s3Client.send(
-    new GetObjectCommand({
-      Bucket: "newsrevealer-config",
-      Key: "warnings.json",
-    })
-  );
-  const chunks = [];
-  for await (const chunk of response.Body as Readable) {
-    chunks.push(chunk);
-  }
-  const warnings = JSON.parse(Buffer.concat(chunks).toString());
+  const warnings = await getConfig("warnings.json");
+  const domains = await getConfig("domains.json");
 
   return {
-    props: warnings[process.env.NEXT_PUBLIC_STAGE] ?? {},
+    props: {
+      warning: warnings[process.env.NEXT_PUBLIC_STAGE] ?? null,
+      domains,
+    },
     revalidate: 3600,
   };
 };
