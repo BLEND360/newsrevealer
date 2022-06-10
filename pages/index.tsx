@@ -4,22 +4,22 @@ import { Form, Row, Col, Container, Alert, Modal } from "react-bootstrap";
 import FormGroup from "../components/FormGroup";
 import FormTextArea from "../components/FormTextArea";
 import {
-  FormMultiSelect,
-  FormMultiSelectProps,
+  FormMultiCreatableSelect,
+  FormMultiCreatableSelectProps,
   FormSelect,
   FormSelectProps,
 } from "../components/FormSelect";
-import topics from "../lib/topics";
 import { useEffect, useState } from "react";
 import LoadingButton from "../components/LoadingButton";
-import { getSummaries } from "../lib/client";
+import { client, getSummaries } from "../lib/client/client";
 import Results, { ResultsProps } from "../components/Results";
 import { GenerateRequest } from "../lib/types";
 import models from "../lib/models";
 import FormRange from "../components/FormRange";
 import { GetStaticProps } from "next";
 import Select from "react-select";
-import { getConfig } from "../lib/s3";
+import { getConfig } from "../lib/server/s3";
+import useSWR from "swr";
 
 interface IndexProps {
   warning: {
@@ -31,6 +31,8 @@ interface IndexProps {
 }
 
 export default function Index({ warning, domains, endpoint }: IndexProps) {
+  const { data } = useSWR("/api/topics", client<{ key: string }[]>("json"));
+
   const [status, setStatus] = useState("ready");
   const [message, setMessage] = useState<string | null>(null);
   const [results, setResults] = useState<ResultsProps | null>(null);
@@ -60,6 +62,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
       setStatus("error");
       console.log(error);
     }
+    await client("POST", 204)("/api/topics", values.topics);
   }
 
   return (
@@ -114,24 +117,28 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
                 </Col>
                 <Col xs={12} md={6} lg={4}>
                   <FormGroup<
-                    FormMultiSelectProps<
+                    FormMultiCreatableSelectProps<
                       { value: string; label: string },
                       string
                     >
                   >
                     name="topics"
-                    as={FormMultiSelect}
+                    as={FormMultiCreatableSelect}
                     label="Topics"
                     getOption={(x) => ({
                       value: x,
-                      label: topics[x].label,
+                      label: x,
                     })}
-                    options={Object.entries(topics).map(
-                      ([value, { label }]) => ({
-                        value,
-                        label,
-                      })
-                    )}
+                    getNewOptionData={(x: string) => ({
+                      value: x,
+                      label: x,
+                    })}
+                    options={
+                      data?.map(({ key }) => ({
+                        value: key,
+                        label: key,
+                      })) ?? []
+                    }
                   />
                   <FormGroup<
                     FormSelectProps<{ value: string; label: string }, string>
