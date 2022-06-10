@@ -1,4 +1,5 @@
 const topics: { [key: string]: { label: string } } = {
+  all: { label: "All" },
   finance: { label: "Finance" },
   economics: { label: "Economics" },
   russia: { label: "Russia" },
