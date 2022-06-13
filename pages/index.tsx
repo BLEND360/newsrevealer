@@ -20,6 +20,7 @@ import FormRange from "../components/FormRange";
 import { GetStaticProps } from "next";
 import Select from "react-select";
 import { getConfig } from "../lib/s3";
+import FormCheck from "../components/FormCheck";
 
 interface IndexProps {
   warning: {
@@ -79,6 +80,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
             topics: [],
             model: "parrot",
             confidence: 0.6,
+            use_dgx: false,
           }}
           onSubmit={handleSubmit}
           validationSchema={yup.object({
@@ -86,6 +88,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
             topics: yup.array().of(yup.string()).max(3),
             model: yup.string().required(),
             confidence: yup.number().min(0).max(1).required(),
+            use_dgx: yup.boolean().required(),
           })}
         >
           {({ handleSubmit, isSubmitting, isValid }) => (
@@ -165,6 +168,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
                     max="1"
                     step="0.01"
                   />
+                  <FormCheck name="use_dgx" label="Use DGX" />
                 </Col>
               </Row>
               <LoadingButton
