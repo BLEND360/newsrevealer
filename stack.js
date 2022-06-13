@@ -35,6 +35,12 @@ module.exports = class AppStack extends Stack {
         resources: ["arn:aws:s3:::newsrevealer-config/*"],
       })
     );
+    app.regenerationFunction.addToRolePolicy(
+      new PolicyStatement({
+        actions: ["s3:GetObject"],
+        resources: ["arn:aws:s3:::newsrevealer-config/*"],
+      })
+    );
     app.edgeLambdaRole.addToPolicy(
       new PolicyStatement({
         actions: [
