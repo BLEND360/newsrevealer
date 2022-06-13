@@ -77,7 +77,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
           initialValues={{
             url: "",
             topics: [],
-            model: "short",
+            model: "parrot",
             confidence: 0.6,
           }}
           onSubmit={handleSubmit}
