@@ -80,7 +80,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
             topics: [],
             model: "parrot",
             confidence: 0.6,
-            use_dgx: false,
+            use_dgx: true,
           }}
           onSubmit={handleSubmit}
           validationSchema={yup.object({
