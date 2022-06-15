@@ -23,6 +23,7 @@ module.exports = class PipelineStack extends Stack {
         commands: [
           "yarn install",
           `echo NEXT_PUBLIC_STAGE=${props.stage} >> .env`,
+          `echo NEXTAUTH_URL=https://${props.domain} >> .env`,
           "export $(cat .env | xargs)",
           "node build.mjs",
           "yarn cdk synth",

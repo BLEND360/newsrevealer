@@ -1,4 +1,4 @@
-import { GenerateError, GenerateRequest, GenerateResult } from "./types";
+import { GenerateError, GenerateRequest, GenerateResult } from "../types";
 import bent from "bent";
 
 export async function getSummaries(

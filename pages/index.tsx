@@ -12,14 +12,14 @@ import {
 import topics from "../lib/topics";
 import { useEffect, useState } from "react";
 import LoadingButton from "../components/LoadingButton";
-import { getSummaries } from "../lib/client";
+import { getSummaries } from "../lib/client/client";
 import Results, { ResultsProps } from "../components/Results";
 import { GenerateRequest } from "../lib/types";
 import models from "../lib/models";
 import FormRange from "../components/FormRange";
 import { GetStaticProps } from "next";
 import Select from "react-select";
-import { getConfig } from "../lib/s3";
+import { getConfig } from "../lib/server/s3";
 import FormCheck from "../components/FormCheck";
 
 interface IndexProps {

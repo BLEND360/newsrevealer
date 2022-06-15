@@ -41,5 +41,33 @@ module.exports = class AppStack extends Stack {
         resources: ["arn:aws:s3:::newsrevealer-config/*"],
       })
     );
+    app.edgeLambdaRole.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          "dynamodb:GetItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:PutItem",
+          "dynamodb:Scan",
+          "dynamodb:Query",
+          "dynamodb:UpdateItem",
+          "dynamodb:BatchWriteItem",
+          "dynamodb:BatchGetItem",
+          "dynamodb:DescribeTable",
+          "dynamodb:ConditionCheckItem",
+        ],
+        resources: [
+          "arn:aws:dynamodb:us-east-1:*:table/newsrevealer*/*",
+          "arn:aws:dynamodb:us-east-1:*:table/newsrevealer*",
+        ],
+      })
+    );
+    app.edgeLambdaRole.addToPolicy(
+      new PolicyStatement({
+        actions: ["secretsmanager:GetSecretValue"],
+        resources: [
+          "arn:aws:secretsmanager:us-east-1:*:secret:newsrevealer-ui-*",
+        ],
+      })
+    );
   }
 };
