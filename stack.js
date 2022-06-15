@@ -61,5 +61,13 @@ module.exports = class AppStack extends Stack {
         ],
       })
     );
+    app.edgeLambdaRole.addToPolicy(
+      new PolicyStatement({
+        actions: ["secretsmanager:GetSecretValue"],
+        resources: [
+          "arn:aws:secretsmanager:us-east-1:*:secret:newsrevealer-ui-*",
+        ],
+      })
+    );
   }
 };

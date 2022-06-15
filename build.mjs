@@ -5,6 +5,7 @@ const builder = new lambda.Builder(".", "./build", {
   useServerlessTraceTarget: true,
   env: {
     NEXT_PUBLIC_STAGE: process.env.NEXT_PUBLIC_STAGE,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL
   },
 });
 await builder.build();
