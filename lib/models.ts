@@ -1,5 +1,3 @@
-const models: { [key: string]: { label: string } } = {
-  parrot: { label: "Parrot" },
-};
+const models: { [key: string]: { label: string } } = {};
 
 export default models;

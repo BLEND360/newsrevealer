@@ -2,7 +2,7 @@ export interface GenerateRequest {
   url: string;
   topics: string[];
   confidence: number;
-  model: string;
+  model: string | null;
   use_dgx: boolean;
 }
 

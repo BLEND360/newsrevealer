@@ -78,7 +78,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
           initialValues={{
             url: "",
             topics: [],
-            model: "parrot",
+            model: null,
             confidence: 0.6,
             use_dgx: true,
           }}
@@ -86,7 +86,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
           validationSchema={yup.object({
             url: yup.string().required(),
             topics: yup.array().of(yup.string()).max(3),
-            model: yup.string().required(),
+            model: yup.string().nullable(),
             confidence: yup.number().min(0).max(1).required(),
             use_dgx: yup.boolean().required(),
           })}
