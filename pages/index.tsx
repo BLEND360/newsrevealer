@@ -192,7 +192,9 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
           onClose={() => setShowAlert(false)}
         >
           <Alert.Heading>{warning?.warningHeading}</Alert.Heading>
-          <p className="mb-0">{warning?.warningText}</p>
+          {warning?.warningText?.split("\n")?.map((line, index) => (
+            <p key={index}>{line}</p>
+          ))}
         </Alert>
       </Modal>
     </Container>
