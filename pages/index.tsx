@@ -10,7 +10,7 @@ import {
   FormSelectProps,
 } from "../components/FormSelect";
 import topics from "../lib/topics";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LoadingButton from "../components/LoadingButton";
 import { getSummaries } from "../lib/client/client";
 import Results, { ResultsProps } from "../components/Results";
@@ -35,12 +35,8 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
   const [status, setStatus] = useState("ready");
   const [message, setMessage] = useState<string | null>(null);
   const [results, setResults] = useState<ResultsProps | null>(null);
-  const [showAlert, setShowAlert] = useState(false);
+  const [showAlert, setShowAlert] = useState(!!warning);
   const [showDomains, setShowDomains] = useState(true);
-
-  useEffect(() => {
-    setShowAlert(process.env.NEXT_PUBLIC_STAGE !== "stable");
-  }, []);
 
   async function handleSubmit(values: GenerateRequest) {
     setStatus("loading");
