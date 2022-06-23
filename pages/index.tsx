@@ -1,6 +1,14 @@
 import { Formik } from "formik";
 import * as yup from "yup";
-import { Form, Row, Col, Container, Alert, Modal } from "react-bootstrap";
+import {
+  Form,
+  Row,
+  Col,
+  Container,
+  Alert,
+  Modal,
+  Button,
+} from "react-bootstrap";
 import FormGroup from "../components/FormGroup";
 import FormTextArea from "../components/FormTextArea";
 import {
@@ -94,7 +102,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
             use_dgx: yup.boolean().required(),
           })}
         >
-          {({ handleSubmit, isSubmitting, isValid }) => (
+          {({ handleSubmit, isSubmitting, isValid, resetForm }) => (
             <Form noValidate onSubmit={handleSubmit}>
               <Row>
                 <Col xs={12} md={6} lg={8}>
@@ -178,14 +186,29 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
                   <FormCheck name="use_dgx" label="Use DGX" />
                 </Col>
               </Row>
-              <LoadingButton
-                status={status}
-                isSubmitting={isSubmitting}
-                isValid={isValid}
-                className="w-100"
-              >
-                Generate
-              </LoadingButton>
+              <Row>
+                <Col>
+                  <LoadingButton
+                    status={status}
+                    isSubmitting={isSubmitting}
+                    isValid={isValid}
+                    className="w-100"
+                  >
+                    Generate
+                  </LoadingButton>
+                </Col>
+                <Col xs="auto">
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setShowDomains(true);
+                      resetForm();
+                    }}
+                  >
+                    Clear State
+                  </Button>
+                </Col>
+              </Row>
             </Form>
           )}
         </Formik>
