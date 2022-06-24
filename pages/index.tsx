@@ -36,10 +36,9 @@ interface IndexProps {
     warningHeading?: string;
   } | null;
   domains: string[];
-  endpoint: string;
 }
 
-export default function Index({ warning, domains, endpoint }: IndexProps) {
+export default function Index({ warning, domains }: IndexProps) {
   const { data } = useSWR("/api/topics", client<{ key: string }[]>("json"));
 
   const [status, setStatus] = useState("ready");
@@ -57,7 +56,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
     setMessage(null);
     try {
       setStatus("success");
-      const res = await getSummaries(values, endpoint);
+      const res = await getSummaries(values);
       if ("errorMessage" in res) {
         setMessage(res.errorMessage);
         setStatus("error");
@@ -203,6 +202,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
                     onClick={() => {
                       setShowDomains(true);
                       resetForm();
+                      setResults(null);
                     }}
                   >
                     Clear State
@@ -234,13 +234,11 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
 export const getStaticProps: GetStaticProps<IndexProps> = async () => {
   const warnings = await getConfig("warnings.json");
   const domains = await getConfig("domains.json");
-  const endpoints = await getConfig("endpoints.json");
 
   return {
     props: {
       warning: warnings[process.env.NEXT_PUBLIC_STAGE] ?? null,
       domains,
-      endpoint: endpoints[process.env.NEXT_PUBLIC_STAGE],
     },
     revalidate: 3600,
   };
