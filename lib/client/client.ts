@@ -45,11 +45,12 @@ export function client(
 
 export async function getSummaries(
   input: GenerateRequest,
+  endpoint: string
 ): Promise<GenerateResult | GenerateError> {
-  return await client<GenerateResult | GenerateError>(
+  return await bent<GenerateResult | GenerateError>(
     "json",
     "POST",
     200,
     400
-  )("/api/invoke", input);
+  )(endpoint, input);
 }

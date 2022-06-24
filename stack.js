@@ -69,13 +69,5 @@ module.exports = class AppStack extends Stack {
         ],
       })
     );
-    app.edgeLambdaRole.addToPolicy(
-      new PolicyStatement({
-        actions: ["lambda:InvokeFunction"],
-        resources: [
-          "arn:aws:lambda:us-east-1:169196863399:function:avrioc_docker:main_runner",
-        ],
-      })
-    );
   }
 };
