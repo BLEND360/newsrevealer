@@ -203,6 +203,7 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
                     onClick={() => {
                       setShowDomains(true);
                       resetForm();
+                      setResults(null);
                     }}
                   >
                     Clear State
