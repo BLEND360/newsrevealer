@@ -145,10 +145,12 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
                       label: x,
                     })}
                     options={
-                      data?.map(({ key }) => ({
-                        value: key,
-                        label: key,
-                      })) ?? []
+                      data
+                        ?.filter(({ key }) => key !== "all")
+                        ?.map(({ key }) => ({
+                          value: key,
+                          label: key,
+                        })) ?? []
                     }
                   />
                   <FormGroup<
