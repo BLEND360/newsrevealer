@@ -25,6 +25,7 @@ export default function LoadingButton({
 }: LoadingButtonProps) {
   const firstUpdate = useRef(true);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [timer, setTimer] = useState(0);
 
   useEffect(() => {
     if (firstUpdate.current) {
@@ -36,6 +37,12 @@ export default function LoadingButton({
           setHasLoaded(false);
         }, 1500);
         return () => clearTimeout(id);
+      } else {
+        setTimer(0);
+        const id = setInterval(() => {
+          setTimer((timer) => timer + 1);
+        }, 1000);
+        return () => clearInterval(id);
       }
     }
   }, [isSubmitting]);
@@ -54,7 +61,11 @@ export default function LoadingButton({
       }
     >
       {isSubmitting ? (
-        "Loading"
+        timer > 0 ? (
+          `Loading (${timer}s)`
+        ) : (
+          "Loading"
+        )
       ) : hasLoaded ? (
         <FontAwesomeIcon
           icon={status === "success" && isValid ? faCheck : faTimes}

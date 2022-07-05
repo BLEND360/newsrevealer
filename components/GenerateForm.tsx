@@ -13,7 +13,7 @@ import {
 import models from "../lib/models";
 import FormRange from "./FormRange";
 import FormCheck from "./FormCheck";
-import LoadingButton from "./LoadingButton";
+import TimerButton from "./TimerButton";
 import useSWR from "swr";
 import { client, getSummaries } from "../lib/client/client";
 import { GenerateRequest } from "../lib/types";
@@ -201,14 +201,14 @@ export default function GenerateForm({
             </Row>
             <Row>
               <Col>
-                <LoadingButton
+                <TimerButton
                   status={status}
                   isSubmitting={isSubmitting}
                   isValid={isValid}
                   className="w-100"
                 >
                   Generate
-                </LoadingButton>
+                </TimerButton>
               </Col>
               <Col xs="auto">
                 <Button

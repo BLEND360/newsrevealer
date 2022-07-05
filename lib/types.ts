@@ -16,6 +16,6 @@ export interface GenerateResult {
 }
 
 export interface GenerateError {
-  errorType: string;
+  errorType?: string;
   errorMessage: string;
 }

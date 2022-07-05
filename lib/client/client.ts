@@ -47,10 +47,15 @@ export async function getSummaries(
   input: GenerateRequest,
   endpoint: string
 ): Promise<GenerateResult | GenerateError> {
-  return await bent<GenerateResult | GenerateError>(
-    "json",
-    "POST",
-    200,
-    400
-  )(endpoint, input);
+  return await Promise.race([
+    bent<GenerateResult | GenerateError>(
+      "json",
+      "POST",
+      200,
+      400
+    )(endpoint, input),
+    new Promise<GenerateError>((resolve) =>
+      setTimeout(() => resolve({ errorMessage: "Request timed out" }), 90000)
+    ),
+  ]);
 }
