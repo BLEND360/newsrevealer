@@ -1,6 +1,15 @@
 import { Card, Col, Row } from "react-bootstrap";
-import styles from "../styles/Results.module.css";
 import { GenerateResult } from "../lib/types";
+import styled from "styled-components";
+
+const ArticleText = styled(Card.Body)`
+  max-height: 36rem;
+  overflow: auto;
+`;
+const TopicText = styled(Card.Body)`
+  max-height: 16rem;
+  overflow: auto;
+`;
 
 export interface ResultsProps {
   results: GenerateResult;
@@ -15,9 +24,9 @@ export default function Results({ results, model }: ResultsProps) {
           <Card.Header>
             <Card.Title>Article Text</Card.Title>
           </Card.Header>
-          <Card.Body className={styles.articleText}>
+          <ArticleText>
             <Card.Text>{results.article_body}</Card.Text>
-          </Card.Body>
+          </ArticleText>
         </Card>
       </Col>
       <Col xs={12} md={8}>
@@ -33,9 +42,9 @@ export default function Results({ results, model }: ResultsProps) {
                         Text
                       </Card.Title>
                     </Card.Header>
-                    <Card.Body className={styles.topicText}>
+                    <TopicText>
                       <Card.Text>{results.sentences_dt?.[value]}</Card.Text>
-                    </Card.Body>
+                    </TopicText>
                   </Card>
                 </Col>
                 <Col xs={12} sm={6}>
@@ -45,7 +54,7 @@ export default function Results({ results, model }: ResultsProps) {
                         {value.replace(/^./, (x) => x.toUpperCase())} Summary
                       </Card.Title>
                     </Card.Header>
-                    <Card.Body className={styles.topicText}>
+                    <TopicText>
                       {model === "short" && (
                         <Card.Text>{results.output_dt?.[value]}</Card.Text>
                       )}
@@ -62,7 +71,7 @@ export default function Results({ results, model }: ResultsProps) {
                       {model === "parrot" && (
                         <Card.Text>{results.parrot_dt?.[value]}</Card.Text>
                       )}
-                    </Card.Body>
+                    </TopicText>
                   </Card>
                 </Col>
               </Row>

@@ -2,7 +2,11 @@ import { Button, ButtonProps } from "react-bootstrap";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import styles from "../styles/LoadingButton.module.css";
+import styled from "styled-components";
+
+const TransitionedButton = styled(Button)<ButtonProps>`
+  transition: background-color 0.25s;
+`;
 
 export interface LoadingButtonProps extends ButtonProps {
   status: string;
@@ -37,10 +41,9 @@ export default function LoadingButton({
   }, [isSubmitting]);
 
   return (
-    <Button
+    <TransitionedButton
       type="submit"
       disabled={isSubmitting || disabled}
-      className={styles.button}
       {...props}
       variant={
         hasLoaded && !isSubmitting
@@ -59,6 +62,6 @@ export default function LoadingButton({
       ) : (
         children
       )}
-    </Button>
+    </TransitionedButton>
   );
 }
