@@ -46,10 +46,15 @@ export function client(
 export async function getSummaries(
   input: GenerateRequest
 ): Promise<GenerateResult | GenerateError> {
-  return await client<GenerateResult | GenerateError>(
-    "json",
-    "POST",
-    200,
-    400
-  )("/api/invoke", input);
+  return await Promise.race([
+    client<GenerateResult | GenerateError>(
+      "json",
+      "POST",
+      200,
+      400
+    )("/api/invoke", input),
+    new Promise<GenerateError>((resolve) =>
+      setTimeout(() => resolve({ errorMessage: "Request timed out" }), 90000)
+    ),
+  ]);
 }
