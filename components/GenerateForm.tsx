@@ -12,7 +12,6 @@ import {
 } from "./FormSelect";
 import models from "../lib/models";
 import FormRange from "./FormRange";
-import FormCheck from "./FormCheck";
 import TimerButton from "./TimerButton";
 import useSWR from "swr";
 import { client, getSummaries } from "../lib/client/client";
@@ -70,7 +69,7 @@ export default function GenerateForm({
           topics: [],
           model: "short",
           confidence: 0.6,
-          use_dgx: true,
+          use_dgx: false,
         }}
         onSubmit={handleSubmit}
         validationSchema={yup.lazy((values) =>
@@ -196,7 +195,6 @@ export default function GenerateForm({
                   max="1"
                   step="0.01"
                 />
-                <FormCheck name="use_dgx" label="Use DGX" />
               </Col>
             </Row>
             <Row>
