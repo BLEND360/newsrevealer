@@ -3,8 +3,7 @@ export interface GenerateRequest {
   text?: string;
   topics: string[];
   confidence: number;
-  model: string | null;
-  use_dgx: boolean;
+  model: string;
 }
 
 export interface GenerateResult {
