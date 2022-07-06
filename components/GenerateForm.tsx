@@ -69,7 +69,6 @@ export default function GenerateForm({
           topics: [],
           model: "short",
           confidence: 0.6,
-          use_dgx: false,
         }}
         onSubmit={handleSubmit}
         validationSchema={yup.lazy((values) =>
@@ -88,7 +87,6 @@ export default function GenerateForm({
               .max(3, "You can only select 3 topics"),
             model: yup.string().required(),
             confidence: yup.number().min(0).max(1).required(),
-            use_dgx: yup.boolean().required(),
           })
         )}
       >
