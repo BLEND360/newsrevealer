@@ -67,6 +67,6 @@ export const getStaticProps: GetStaticProps<IndexProps> = async () => {
       warning: warnings[process.env.NEXT_PUBLIC_STAGE] ?? null,
       domains,
     },
-    revalidate: 3600,
+    revalidate: 300,
   };
 };
