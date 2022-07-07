@@ -11,10 +11,9 @@ interface IndexProps {
     warningHeading?: string;
   } | null;
   domains: string[];
-  endpoint: string;
 }
 
-export default function Index({ warning, domains, endpoint }: IndexProps) {
+export default function Index({ warning, domains }: IndexProps) {
   const [status, setStatus] = useState("ready");
   const [message, setMessage] = useState<string | null>(null);
   const [results, setResults] = useState<ResultsProps | null>(null);
@@ -35,7 +34,6 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
         {message ?? "An unknown error occurred"}
       </Alert>
       <GenerateForm
-        endpoint={endpoint}
         domains={domains}
         status={status}
         onMessageChange={setMessage}
@@ -63,13 +61,11 @@ export default function Index({ warning, domains, endpoint }: IndexProps) {
 export const getStaticProps: GetStaticProps<IndexProps> = async () => {
   const warnings = await getConfig("warnings.json");
   const domains = await getConfig("domains.json");
-  const endpoints = await getConfig("endpoints.json");
 
   return {
     props: {
       warning: warnings[process.env.NEXT_PUBLIC_STAGE] ?? null,
       domains,
-      endpoint: endpoints[process.env.NEXT_PUBLIC_STAGE],
     },
     revalidate: 3600,
   };

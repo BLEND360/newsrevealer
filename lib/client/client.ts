@@ -1,4 +1,4 @@
-import { GenerateError, GenerateRequest, GenerateResult } from "../types";
+import { GenerateRequest, GenerateResponse } from "../types";
 import bent from "bent";
 
 export function client(
@@ -45,16 +45,10 @@ export function client(
 
 export async function getSummaries(
   input: GenerateRequest
-): Promise<GenerateResult | GenerateError> {
-  return await Promise.race([
-    client<GenerateResult | GenerateError>(
-      "json",
-      "POST",
-      200,
-      400
-    )("/api/invoke", input),
-    new Promise<GenerateError>((resolve) =>
-      setTimeout(() => resolve({ errorMessage: "Request timed out" }), 90000)
-    ),
-  ]);
+): Promise<GenerateResponse> {
+  return await client<GenerateResponse>(
+    "json",
+    "POST",
+    202
+  )("/api/generate", input);
 }

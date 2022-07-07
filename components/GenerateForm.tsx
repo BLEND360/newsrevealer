@@ -13,15 +13,19 @@ import {
 import models from "../lib/models";
 import FormRange from "./FormRange";
 import TimerButton from "./TimerButton";
-import { getSummaries } from "../lib/client/client";
-import { GenerateRequest } from "../lib/types";
+import { client, getSummaries } from "../lib/client/client";
+import {
+  GenerateError,
+  GenerateRequest,
+  GenerateResponse,
+  GenerateResult,
+} from "../lib/types";
 import { ResultsProps } from "./Results";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import topics from "../lib/topics";
 
 export interface GenerateFormProps {
   domains: string[];
-  endpoint: string;
   status: string;
   onResultsChange: (results: ResultsProps | null) => void;
   onStatusChange: (status: string) => void;
@@ -29,7 +33,6 @@ export interface GenerateFormProps {
 }
 
 export default function GenerateForm({
-  endpoint,
   domains,
   status,
   onResultsChange,
@@ -37,22 +40,54 @@ export default function GenerateForm({
   onStatusChange,
 }: GenerateFormProps) {
   const [copyPaste, setCopyPaste] = useState<boolean | null>(null);
+  const [response, setResponse] = useState<
+    (GenerateResponse & { model: string }) | null
+  >(null);
+
+  useEffect(() => {
+    if (response) {
+      const id = setInterval(async () => {
+        try {
+          const res = await client<{
+            status: "PENDING" | "DONE";
+            result?: GenerateResult | GenerateError;
+          }>("json")(
+            `/api/generate-results?bucket=${response.bucket}&key=${response.key}`
+          );
+          if (res.status === "DONE") {
+            if ("errorMessage" in res.result!) {
+              onMessageChange(res.result.errorMessage);
+              onStatusChange("error");
+            } else {
+              onResultsChange({ model: response.model, results: res.result! });
+              onStatusChange("success");
+            }
+            setResponse(null);
+          }
+        } catch (error) {
+          onStatusChange("error");
+          console.log(error);
+          setResponse(null);
+        }
+      }, 2000);
+      const timeoutId = setTimeout(() => {
+        setResponse(null);
+        onMessageChange("Request timed out.");
+        onStatusChange("error");
+      }, 90000);
+      return () => {
+        clearTimeout(timeoutId);
+        clearInterval(id);
+      };
+    }
+  }, [onMessageChange, onResultsChange, onStatusChange, response]);
 
   async function handleSubmit(values: GenerateRequest) {
     onStatusChange("loading");
     onMessageChange(null);
     try {
-      onStatusChange("success");
-      const res = await getSummaries(values, endpoint);
-      if ("errorMessage" in res) {
-        onMessageChange(res.errorMessage);
-        onStatusChange("error");
-      } else {
-        onResultsChange({
-          model: values.model,
-          results: res,
-        });
-      }
+      const res = await getSummaries(values);
+      setResponse({ ...res, model: values.model });
     } catch (error) {
       onStatusChange("error");
       console.log(error);
@@ -87,13 +122,7 @@ export default function GenerateForm({
           })
         )}
       >
-        {({
-          handleSubmit,
-          isSubmitting,
-          isValid,
-          resetForm,
-          setFieldValue,
-        }) => (
+        {({ handleSubmit, isValid, resetForm, setFieldValue }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <Row>
               <Col xs={12} md={6} lg={8}>
@@ -185,7 +214,7 @@ export default function GenerateForm({
               <Col>
                 <TimerButton
                   status={status}
-                  isSubmitting={isSubmitting}
+                  isSubmitting={status === "loading"}
                   isValid={isValid}
                   className="w-100"
                 >
