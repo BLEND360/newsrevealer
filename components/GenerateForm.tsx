@@ -76,7 +76,7 @@ export default function GenerateForm({
         setResponse(null);
         onMessageChange("Request timed out.");
         onStatusChange("error");
-      }, 90000);
+      }, 120000);
       return () => {
         clearTimeout(timeoutId);
         clearInterval(id);
