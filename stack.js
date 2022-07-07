@@ -69,5 +69,22 @@ module.exports = class AppStack extends Stack {
         ],
       })
     );
+    app.edgeLambdaRole.addToPolicy(
+      new PolicyStatement({
+        actions: ["lambda:InvokeFunction"],
+        resources: [
+          "arn:aws:lambda:us-east-1:169196863399:function:avrioc_docker:async_response",
+        ],
+      })
+    );
+    app.edgeLambdaRole.addToPolicy(
+      new PolicyStatement({
+        actions: ["s3:GetObject", "s3:ListBucket"],
+        resources: [
+          "arn:aws:s3:::newsrevealer-generation/*",
+          "arn:aws:s3:::newsrevealer-generation",
+        ],
+      })
+    );
   }
 };

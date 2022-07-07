@@ -8,13 +8,13 @@ const TransitionedButton = styled(Button)<ButtonProps>`
   transition: background-color 0.25s;
 `;
 
-export interface LoadingButtonProps extends ButtonProps {
+export interface TimerButtonProps extends ButtonProps {
   status: string;
   isSubmitting: boolean;
   isValid: boolean;
 }
 
-export default function LoadingButton({
+export default function TimerButton({
   children,
   status,
   isSubmitting,
@@ -22,7 +22,7 @@ export default function LoadingButton({
   variant,
   disabled,
   ...props
-}: LoadingButtonProps) {
+}: TimerButtonProps) {
   const firstUpdate = useRef(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [timer, setTimer] = useState(0);

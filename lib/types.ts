@@ -6,6 +6,16 @@ export interface GenerateRequest {
   model: string;
 }
 
+export interface AsyncGenerateRequest extends GenerateRequest {
+  bucket: string;
+  key: string;
+}
+
+export interface GenerateResponse {
+  bucket: string;
+  key: string;
+}
+
 export interface GenerateResult {
   article_body: string;
   sentences_dt: { [key: string]: string };
