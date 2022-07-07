@@ -41,7 +41,7 @@ export default function GenerateForm({
 }: GenerateFormProps) {
   const [copyPaste, setCopyPaste] = useState<boolean | null>(null);
   const [response, setResponse] = useState<
-    (GenerateResponse & { model: string }) | null
+    (GenerateResponse & { model: string | null }) | null
   >(null);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function GenerateForm({
         setResponse(null);
         onMessageChange("Request timed out.");
         onStatusChange("error");
-      }, 90000);
+      }, 120000);
       return () => {
         clearTimeout(timeoutId);
         clearInterval(id);
@@ -99,7 +99,7 @@ export default function GenerateForm({
       <Formik
         initialValues={{
           topics: [],
-          model: "short",
+          model: null,
           confidence: 0.6,
         }}
         onSubmit={handleSubmit}
@@ -117,7 +117,7 @@ export default function GenerateForm({
               .array()
               .of(yup.string())
               .max(3, "You can only select 3 topics"),
-            model: yup.string().required(),
+            model: yup.string().nullable(),
             confidence: yup.number().min(0).max(1).required(),
           })
         )}

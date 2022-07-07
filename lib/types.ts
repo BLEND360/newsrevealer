@@ -3,7 +3,7 @@ export interface GenerateRequest {
   text?: string;
   topics: string[];
   confidence: number;
-  model: string;
+  model: string | null;
 }
 
 export interface AsyncGenerateRequest extends GenerateRequest {
