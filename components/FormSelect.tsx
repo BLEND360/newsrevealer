@@ -1,4 +1,5 @@
-import Select, { Props } from "react-select";
+import Select, { Props, GroupBase } from "react-select";
+import CreatableSelect, { CreatableProps } from "react-select/creatable";
 import { useFormikContext } from "formik";
 
 export interface FormSelectProps<Option, Value>
@@ -43,8 +44,8 @@ export function FormSelect<Option = unknown, Value = unknown>({
   );
 }
 
-export interface FormMultiSelectProps<Option, Value>
-  extends Omit<Props<Option, true>, "value"> {
+export interface FormMultiCreatableSelectProps<Option, Value>
+  extends Omit<CreatableProps<Option, true, GroupBase<Option>>, "value"> {
   getFormValue?: (x: Option) => Value;
   getOption?: (x: Value) => Option;
   getOptionLabel?: (x: Option) => string;
@@ -54,7 +55,7 @@ export interface FormMultiSelectProps<Option, Value>
   value: Value[];
 }
 
-export function FormMultiSelect<Option = unknown, Value = unknown>({
+export function FormMultiCreatableSelect<Option = unknown, Value = unknown>({
   name,
   value,
   getOptionValue = (x) => (x as { value?: unknown }).value as string,
@@ -65,7 +66,7 @@ export function FormMultiSelect<Option = unknown, Value = unknown>({
       (option) => getOptionValue(option) === (value as unknown as string)
     ) as Option,
   ...props
-}: FormMultiSelectProps<Option, Value>) {
+}: FormMultiCreatableSelectProps<Option, Value>) {
   const formik = useFormikContext();
 
   function handleChange(item: readonly Option[]) {
@@ -73,7 +74,7 @@ export function FormMultiSelect<Option = unknown, Value = unknown>({
   }
 
   return (
-    <Select
+    <CreatableSelect
       {...props}
       options={options}
       isMulti

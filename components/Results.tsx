@@ -1,5 +1,4 @@
 import { Card, Col, Row } from "react-bootstrap";
-import topics from "../lib/topics";
 import { GenerateResult } from "../lib/types";
 import styled from "styled-components";
 
@@ -14,13 +13,13 @@ const TopicText = styled(Card.Body)`
 
 export interface ResultsProps {
   results: GenerateResult;
-  model: string | null;
+  model: string;
 }
 
 export default function Results({ results, model }: ResultsProps) {
   return (
     <Row>
-      <Col xs={12} md={model ? 4 : 12}>
+      <Col xs={12} md={4}>
         <Card className="mb-3">
           <Card.Header>
             <Card.Title>Article Text</Card.Title>
@@ -30,52 +29,55 @@ export default function Results({ results, model }: ResultsProps) {
           </ArticleText>
         </Card>
       </Col>
-      {model && (
-        <Col xs={12} md={8}>
-          {Object.entries(topics).map(
-            ([value, { label }]) =>
-              results.sentences_dt[value] && (
-                <Row key={value}>
-                  <Col xs={12} sm={6}>
-                    <Card className="mb-3">
-                      <Card.Header>
-                        <Card.Title>{label} Classified Text</Card.Title>
-                      </Card.Header>
-                      <TopicText>
-                        <Card.Text>{results.sentences_dt?.[value]}</Card.Text>
-                      </TopicText>
-                    </Card>
-                  </Col>
-                  <Col xs={12} sm={6}>
-                    <Card className="mb-3">
-                      <Card.Header>
-                        <Card.Title>{label} Summary</Card.Title>
-                      </Card.Header>
-                      <TopicText>
-                        {model === "short" && (
-                          <Card.Text>{results.output_dt?.[value]}</Card.Text>
-                        )}
-                        {model === "long" && (
-                          <>
-                            <Card.Text>
-                              <strong>{results.output_dt?.[value]}</strong>
-                            </Card.Text>
-                            <Card.Text>
-                              {results.long_summary_dt?.[value]}
-                            </Card.Text>
-                          </>
-                        )}
-                        {model === "parrot" && (
-                          <Card.Text>{results.parrot_dt?.[value]}</Card.Text>
-                        )}
-                      </TopicText>
-                    </Card>
-                  </Col>
-                </Row>
-              )
-          )}
-        </Col>
-      )}
+      <Col xs={12} md={8}>
+        {Object.keys(results.sentences_dt).map(
+          (value) =>
+            results.sentences_dt[value] && (
+              <Row key={value}>
+                <Col xs={12} sm={6}>
+                  <Card className="mb-3">
+                    <Card.Header>
+                      <Card.Title>
+                        {value.replace(/^./, (x) => x.toUpperCase())} Classified
+                        Text
+                      </Card.Title>
+                    </Card.Header>
+                    <TopicText>
+                      <Card.Text>{results.sentences_dt?.[value]}</Card.Text>
+                    </TopicText>
+                  </Card>
+                </Col>
+                <Col xs={12} sm={6}>
+                  <Card className="mb-3">
+                    <Card.Header>
+                      <Card.Title>
+                        {value.replace(/^./, (x) => x.toUpperCase())} Summary
+                      </Card.Title>
+                    </Card.Header>
+                    <TopicText>
+                      {model === "short" && (
+                        <Card.Text>{results.output_dt?.[value]}</Card.Text>
+                      )}
+                      {model === "long" && (
+                        <>
+                          <Card.Text>
+                            <strong>{results.output_dt?.[value]}</strong>
+                          </Card.Text>
+                          <Card.Text>
+                            {results.long_summary_dt?.[value]}
+                          </Card.Text>
+                        </>
+                      )}
+                      {model === "parrot" && (
+                        <Card.Text>{results.parrot_dt?.[value]}</Card.Text>
+                      )}
+                    </TopicText>
+                  </Card>
+                </Col>
+              </Row>
+            )
+        )}
+      </Col>
     </Row>
   );
 }

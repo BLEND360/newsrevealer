@@ -5,14 +5,15 @@ import Select from "react-select";
 import FormGroup from "./FormGroup";
 import FormTextArea from "./FormTextArea";
 import {
-  FormMultiSelect,
-  FormMultiSelectProps,
+  FormMultiCreatableSelect,
+  FormMultiCreatableSelectProps,
   FormSelect,
   FormSelectProps,
 } from "./FormSelect";
 import models from "../lib/models";
 import FormRange from "./FormRange";
 import TimerButton from "./TimerButton";
+import useSWR from "swr";
 import { client, getSummaries } from "../lib/client/client";
 import {
   GenerateError,
@@ -22,7 +23,6 @@ import {
 } from "../lib/types";
 import { ResultsProps } from "./Results";
 import { useEffect, useState } from "react";
-import topics from "../lib/topics";
 
 export interface GenerateFormProps {
   domains: string[];
@@ -39,9 +39,11 @@ export default function GenerateForm({
   onMessageChange,
   onStatusChange,
 }: GenerateFormProps) {
+  const { data } = useSWR("/api/topics", client<{ key: string }[]>("json"));
+
   const [copyPaste, setCopyPaste] = useState<boolean | null>(null);
   const [response, setResponse] = useState<
-    (GenerateResponse & { model: string | null }) | null
+    (GenerateResponse & { model: string }) | null
   >(null);
 
   useEffect(() => {
@@ -92,6 +94,7 @@ export default function GenerateForm({
       onStatusChange("error");
       console.log(error);
     }
+    await client("POST", 204)("/api/topics", values.topics);
   }
 
   return (
@@ -99,7 +102,7 @@ export default function GenerateForm({
       <Formik
         initialValues={{
           topics: [],
-          model: null,
+          model: "short",
           confidence: 0.6,
         }}
         onSubmit={handleSubmit}
@@ -117,7 +120,7 @@ export default function GenerateForm({
               .array()
               .of(yup.string())
               .max(3, "You can only select 3 topics"),
-            model: yup.string().nullable(),
+            model: yup.string().required(),
             confidence: yup.number().min(0).max(1).required(),
           })
         )}
@@ -164,19 +167,30 @@ export default function GenerateForm({
               </Col>
               <Col xs={12} md={6} lg={4}>
                 <FormGroup<
-                  FormMultiSelectProps<{ value: string; label: string }, string>
+                  FormMultiCreatableSelectProps<
+                    { value: string; label: string },
+                    string
+                  >
                 >
                   name="topics"
-                  as={FormMultiSelect}
+                  as={FormMultiCreatableSelect}
                   label="Topics"
                   getOption={(x) => ({
                     value: x,
-                    label: topics[x].label,
+                    label: x,
                   })}
-                  options={Object.entries(topics).map(([value, { label }]) => ({
-                    value,
-                    label,
-                  }))}
+                  getNewOptionData={(x: string) => ({
+                    value: x,
+                    label: x,
+                  })}
+                  options={
+                    data
+                      ?.filter(({ key }) => key !== "all")
+                      ?.map(({ key }) => ({
+                        value: key,
+                        label: key,
+                      })) ?? []
+                  }
                 />
                 <FormGroup<
                   FormSelectProps<{ value: string; label: string }, string>
