@@ -1,5 +1,5 @@
 import { Container, Alert, Modal } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Results, { ResultsProps } from "../components/Results";
 import { GetStaticProps } from "next";
 import { getConfig } from "../lib/server/s3";
@@ -17,11 +17,7 @@ export default function Index({ warning, domains }: IndexProps) {
   const [status, setStatus] = useState("ready");
   const [message, setMessage] = useState<string | null>(null);
   const [results, setResults] = useState<ResultsProps | null>(null);
-  const [showAlert, setShowAlert] = useState(false);
-
-  useEffect(() => {
-    setShowAlert(process.env.NEXT_PUBLIC_STAGE !== "stable");
-  }, []);
+  const [showAlert, setShowAlert] = useState(!!warning);
 
   return (
     <Container>
