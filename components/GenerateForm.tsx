@@ -1,7 +1,13 @@
 import { Formik } from "formik";
 import * as yup from "yup";
-import { Button, Col, Form, Row } from "react-bootstrap";
-import Select from "react-select";
+import {
+  Button,
+  Col,
+  Form,
+  OverlayTrigger,
+  Popover,
+  Row,
+} from "react-bootstrap";
 import FormGroup from "./FormGroup";
 import FormTextArea from "./FormTextArea";
 import {
@@ -23,6 +29,7 @@ import {
 } from "../lib/types";
 import { ResultsProps } from "./Results";
 import { useEffect, useState } from "react";
+import DomainsButton from "./DomainsButton";
 
 export interface GenerateFormProps {
   domains: string[];
@@ -131,19 +138,23 @@ export default function GenerateForm({
               <Col xs={12} md={6} lg={8}>
                 {copyPaste === null ? (
                   <>
-                    <Form.Group controlId="domain" className="mb-3">
-                      <Form.Label>Domain</Form.Label>
-                      <Select
-                        className="w-100"
-                        options={domains.map((x) => ({ value: x, label: x }))}
-                        onChange={() => {
-                          setFieldValue("url", "");
-                          setCopyPaste(false);
-                        }}
-                        value={null}
-                        id="domain"
-                      />
-                    </Form.Group>
+                    <Row>
+                      <Col>
+                        <Button
+                          variant="outline-secondary"
+                          onClick={() => {
+                            setFieldValue("url", "");
+                            setCopyPaste(false);
+                          }}
+                          className="w-100 mb-3"
+                        >
+                          Enter Article URL
+                        </Button>
+                      </Col>
+                      <Col xs="auto">
+                        <DomainsButton domains={domains} />
+                      </Col>
+                    </Row>
                     <p className="text-center text-muted">or</p>
                     <Button
                       variant="secondary"

@@ -1,15 +1,6 @@
 import { Card, Col, Row } from "react-bootstrap";
 import { GenerateResult } from "../lib/types";
-import styled from "styled-components";
-
-const ArticleText = styled(Card.Body)`
-  max-height: 36rem;
-  overflow: auto;
-`;
-const TopicText = styled(Card.Body)`
-  max-height: 16rem;
-  overflow: auto;
-`;
+import ResultCard from "./ResultCard";
 
 export interface ResultsProps {
   results: GenerateResult;
@@ -20,14 +11,11 @@ export default function Results({ results, model }: ResultsProps) {
   return (
     <Row>
       <Col xs={12} md={4}>
-        <Card className="mb-3">
-          <Card.Header>
-            <Card.Title>Article Text</Card.Title>
-          </Card.Header>
-          <ArticleText>
-            <Card.Text>{results.article_body}</Card.Text>
-          </ArticleText>
-        </Card>
+        <ResultCard
+          height="36rem"
+          title="Article Text"
+          body={results.article_body}
+        />
       </Col>
       <Col xs={12} md={8}>
         {Object.keys(results.sentences_dt).map(
@@ -35,44 +23,49 @@ export default function Results({ results, model }: ResultsProps) {
             results.sentences_dt[value] && (
               <Row key={value}>
                 <Col xs={12} sm={6}>
-                  <Card className="mb-3">
-                    <Card.Header>
-                      <Card.Title>
-                        {value.replace(/^./, (x) => x.toUpperCase())} Classified
-                        Text
-                      </Card.Title>
-                    </Card.Header>
-                    <TopicText>
-                      <Card.Text>{results.sentences_dt?.[value]}</Card.Text>
-                    </TopicText>
-                  </Card>
+                  <ResultCard
+                    height="16rem"
+                    title={`${value.replace(/^./, (x) =>
+                      x.toUpperCase()
+                    )} Classified Text`}
+                    body={results.sentences_dt?.[value]}
+                  />
                 </Col>
                 <Col xs={12} sm={6}>
-                  <Card className="mb-3">
-                    <Card.Header>
-                      <Card.Title>
-                        {value.replace(/^./, (x) => x.toUpperCase())} Summary
-                      </Card.Title>
-                    </Card.Header>
-                    <TopicText>
-                      {model === "short" && (
-                        <Card.Text>{results.output_dt?.[value]}</Card.Text>
-                      )}
-                      {model === "long" && (
-                        <>
-                          <Card.Text>
-                            <strong>{results.output_dt?.[value]}</strong>
-                          </Card.Text>
-                          <Card.Text>
-                            {results.long_summary_dt?.[value]}
-                          </Card.Text>
-                        </>
-                      )}
-                      {model === "parrot" && (
-                        <Card.Text>{results.parrot_dt?.[value]}</Card.Text>
-                      )}
-                    </TopicText>
-                  </Card>
+                  <ResultCard
+                    height="16rem"
+                    title={`${value.replace(/^./, (x) =>
+                      x.toUpperCase()
+                    )} Summary`}
+                    body={
+                      model === "short"
+                        ? results.output_dt?.[value]
+                        : model === "long"
+                        ? results.output_dt?.[value] +
+                          "\n\n" +
+                          results.long_summary_dt?.[value]
+                        : model === "parrot"
+                        ? results.parrot_dt?.[value]
+                        : ""
+                    }
+                  >
+                    {model === "short" && (
+                      <Card.Text>{results.output_dt?.[value]}</Card.Text>
+                    )}
+                    {model === "long" && (
+                      <>
+                        <Card.Text>
+                          <strong>{results.output_dt?.[value]}</strong>
+                        </Card.Text>
+                        <Card.Text>
+                          {results.long_summary_dt?.[value]}
+                        </Card.Text>
+                      </>
+                    )}
+                    {model === "parrot" && (
+                      <Card.Text>{results.parrot_dt?.[value]}</Card.Text>
+                    )}
+                  </ResultCard>
                 </Col>
               </Row>
             )
