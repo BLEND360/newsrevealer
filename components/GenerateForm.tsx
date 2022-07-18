@@ -29,6 +29,7 @@ import {
 } from "../lib/types";
 import { ResultsProps } from "./Results";
 import { useEffect, useState } from "react";
+import DomainsButton from "./DomainsButton";
 
 export interface GenerateFormProps {
   domains: string[];
@@ -151,22 +152,7 @@ export default function GenerateForm({
                         </Button>
                       </Col>
                       <Col xs="auto">
-                        <OverlayTrigger
-                          placement="bottom"
-                          overlay={
-                            <Popover id="domains-tooltip">
-                              <Popover.Body>
-                                <strong>
-                                  News Revealer only supports articles from the
-                                  following domains:
-                                </strong>
-                              </Popover.Body>
-                              <Popover.Body>{domains.join(", ")}</Popover.Body>
-                            </Popover>
-                          }
-                        >
-                          <Button variant="outline-secondary">?</Button>
-                        </OverlayTrigger>
+                        <DomainsButton domains={domains} />
                       </Col>
                     </Row>
                     <p className="text-center text-muted">or</p>
