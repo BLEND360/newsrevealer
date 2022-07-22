@@ -5,9 +5,12 @@ import {
   GenerateResponse,
 } from "../types";
 import crypto from "node:crypto";
+import { getConfig } from "./s3";
 
 const lambdaClient = new LambdaClient({ region: "us-east-1" });
 const te = new TextEncoder();
+
+const aliases = getConfig("aliases.json");
 
 export async function invoke(body: GenerateRequest): Promise<GenerateResponse> {
   const bucket = "newsrevealer-generation";
@@ -15,8 +18,7 @@ export async function invoke(body: GenerateRequest): Promise<GenerateResponse> {
   const payload: AsyncGenerateRequest = { ...body, bucket, key };
   await lambdaClient.send(
     new InvokeCommand({
-      FunctionName:
-        "arn:aws:lambda:us-east-1:169196863399:function:avrioc_docker:async_response",
+      FunctionName: (await aliases)[process.env.NEXT_PUBLIC_STAGE],
       Payload: te.encode(
         JSON.stringify({
           body: JSON.stringify(payload),
