@@ -22,6 +22,7 @@ export interface GenerateResult {
   output_dt: { [key: string]: string };
   parrot_dt: { [key: string]: string };
   long_summary_dt: { [key: string]: string };
+  metrics_dt: { [key: string]: { [key: string]: string } };
 }
 
 export interface GenerateError {

@@ -48,6 +48,7 @@ export default function Results({ results, model }: ResultsProps) {
                         ? results.parrot_dt?.[value]
                         : ""
                     }
+                    metrics={results.metrics_dt?.[value]}
                   >
                     {model === "short" && (
                       <Card.Text>{results.output_dt?.[value]}</Card.Text>
