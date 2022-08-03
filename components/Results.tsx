@@ -11,14 +11,12 @@ export default function Results({ results, model }: ResultsProps) {
   return (
     <Row>
       <Col xs={12} lg={4}>
-        <div className="h-100 pb-3">
-          <ResultCard
-            height="100%"
-            title="Article Text"
-            body={results.article_body}
-            metrics={results.source_metrics_dt}
-          />
-        </div>
+        <ResultCard
+          height="40rem"
+          title="Article Text"
+          body={results.article_body}
+          metrics={results.source_metrics_dt}
+        />
       </Col>
       <Col xs={12} lg={8}>
         {Object.keys(results.sentences_dt).map(
