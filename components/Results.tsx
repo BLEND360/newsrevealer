@@ -44,8 +44,8 @@ export default function Results({ results, model }: ResultsProps) {
                         ? results.output_dt?.[value] +
                           "\n\n" +
                           results.long_summary_dt?.[value]
-                        : model === "parrot"
-                        ? results.parrot_dt?.[value]
+                        : model === "bot"
+                        ? results.bot_dt?.[value]
                         : ""
                     }
                     metrics={results.metrics_dt?.[value]}
@@ -63,8 +63,8 @@ export default function Results({ results, model }: ResultsProps) {
                         </Card.Text>
                       </>
                     )}
-                    {model === "parrot" && (
-                      <Card.Text>{results.parrot_dt?.[value]}</Card.Text>
+                    {model === "bot" && (
+                      <Card.Text>{results.bot_dt?.[value]}</Card.Text>
                     )}
                   </ResultCard>
                 </Col>
