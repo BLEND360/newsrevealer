@@ -14,7 +14,6 @@ export default function Results({ results, model }: ResultsProps) {
         <div className="h-100 pb-3">
           <ResultCard
             height="100%"
-            minHeight="40rem"
             title="Article Text"
             body={results.article_body}
             metrics={results.source_metrics_dt}
@@ -28,7 +27,7 @@ export default function Results({ results, model }: ResultsProps) {
               <Row key={value}>
                 <Col xs={12} sm={6}>
                   <ResultCard
-                    height="20rem"
+                    height="40rem"
                     title={`${value.replace(/^./, (x) =>
                       x.toUpperCase()
                     )} Classified Text`}
@@ -38,7 +37,7 @@ export default function Results({ results, model }: ResultsProps) {
                 </Col>
                 <Col xs={12} sm={6}>
                   <ResultCard
-                    height="20rem"
+                    height="40rem"
                     title={`${value.replace(/^./, (x) =>
                       x.toUpperCase()
                     )} Summary`}
