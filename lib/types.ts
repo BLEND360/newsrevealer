@@ -23,6 +23,8 @@ export interface GenerateResult {
   bot_dt: { [key: string]: string };
   long_summary_dt: { [key: string]: string };
   metrics_dt: { [key: string]: { [key: string]: string } };
+  source_metrics_dt: { [key: string]: string };
+  classified_metrics_dt: { [key: string]: { [key: string]: string } };
 }
 
 export interface GenerateError {

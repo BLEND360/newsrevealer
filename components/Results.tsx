@@ -10,30 +10,35 @@ export interface ResultsProps {
 export default function Results({ results, model }: ResultsProps) {
   return (
     <Row>
-      <Col xs={12} md={4}>
-        <ResultCard
-          height="36rem"
-          title="Article Text"
-          body={results.article_body}
-        />
+      <Col xs={12} lg={4}>
+        <div className="h-100 pb-3">
+          <ResultCard
+            height="100%"
+            minHeight="40rem"
+            title="Article Text"
+            body={results.article_body}
+            metrics={results.source_metrics_dt}
+          />
+        </div>
       </Col>
-      <Col xs={12} md={8}>
+      <Col xs={12} lg={8}>
         {Object.keys(results.sentences_dt).map(
           (value) =>
             results.sentences_dt[value] && (
               <Row key={value}>
                 <Col xs={12} sm={6}>
                   <ResultCard
-                    height="16rem"
+                    height="20rem"
                     title={`${value.replace(/^./, (x) =>
                       x.toUpperCase()
                     )} Classified Text`}
                     body={results.sentences_dt?.[value]}
+                    metrics={results.classified_metrics_dt?.[value]}
                   />
                 </Col>
                 <Col xs={12} sm={6}>
                   <ResultCard
-                    height="16rem"
+                    height="20rem"
                     title={`${value.replace(/^./, (x) =>
                       x.toUpperCase()
                     )} Summary`}

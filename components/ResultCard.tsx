@@ -3,13 +3,17 @@ import styled from "styled-components";
 import { ReactNode } from "react";
 import CopyButton from "./CopyButton";
 
-const ResultCardBody = styled(Card.Body)<{ height: string }>`
-  max-height: ${(props) => props.height};
+const FixedHeightCard = styled(Card)<{ height?: string; minheight?: string }>`
+  height: ${(props) => props.height};
+  min-height: ${(props) => props.minheight};
+`;
+const ResultCardBody = styled(Card.Body)`
   overflow: auto;
 `;
 
 export interface ResultCardProps {
-  height: string;
+  height?: string;
+  minHeight?: string;
   title: string;
   body: string;
   children?: ReactNode;
@@ -18,13 +22,14 @@ export interface ResultCardProps {
 
 export default function ResultCard({
   height,
+  minHeight,
   title,
   body,
   children,
   metrics,
 }: ResultCardProps) {
   return (
-    <Card className="mb-3">
+    <FixedHeightCard className="mb-3" height={height} minheight={minHeight}>
       <Card.Header className="d-flex align-items-center">
         <div className="flex-grow-1">
           <Card.Title>{title}</Card.Title>
@@ -38,9 +43,9 @@ export default function ResultCard({
         </div>
         <CopyButton text={body} />
       </Card.Header>
-      <ResultCardBody height={height}>
+      <ResultCardBody>
         {children ?? <Card.Text>{body}</Card.Text>}
       </ResultCardBody>
-    </Card>
+    </FixedHeightCard>
   );
 }
