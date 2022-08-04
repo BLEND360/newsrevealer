@@ -10,30 +10,32 @@ export interface ResultsProps {
 export default function Results({ results, model }: ResultsProps) {
   return (
     <Row>
-      <Col xs={12} md={4}>
+      <Col xs={12} lg={4}>
         <ResultCard
-          height="36rem"
+          height="40rem"
           title="Article Text"
           body={results.article_body}
+          metrics={results.source_metrics_dt}
         />
       </Col>
-      <Col xs={12} md={8}>
+      <Col xs={12} lg={8}>
         {Object.keys(results.sentences_dt).map(
           (value) =>
             results.sentences_dt[value] && (
               <Row key={value}>
                 <Col xs={12} sm={6}>
                   <ResultCard
-                    height="16rem"
+                    height="40rem"
                     title={`${value.replace(/^./, (x) =>
                       x.toUpperCase()
                     )} Classified Text`}
                     body={results.sentences_dt?.[value]}
+                    metrics={results.classified_metrics_dt?.[value]}
                   />
                 </Col>
                 <Col xs={12} sm={6}>
                   <ResultCard
-                    height="16rem"
+                    height="40rem"
                     title={`${value.replace(/^./, (x) =>
                       x.toUpperCase()
                     )} Summary`}
@@ -44,10 +46,11 @@ export default function Results({ results, model }: ResultsProps) {
                         ? results.output_dt?.[value] +
                           "\n\n" +
                           results.long_summary_dt?.[value]
-                        : model === "parrot"
-                        ? results.parrot_dt?.[value]
+                        : model === "bot"
+                        ? results.bot_dt?.[value]
                         : ""
                     }
+                    metrics={results.metrics_dt?.[value]}
                   >
                     {model === "short" && (
                       <Card.Text>{results.output_dt?.[value]}</Card.Text>
@@ -62,8 +65,8 @@ export default function Results({ results, model }: ResultsProps) {
                         </Card.Text>
                       </>
                     )}
-                    {model === "parrot" && (
-                      <Card.Text>{results.parrot_dt?.[value]}</Card.Text>
+                    {model === "bot" && (
+                      <Card.Text>{results.bot_dt?.[value]}</Card.Text>
                     )}
                   </ResultCard>
                 </Col>

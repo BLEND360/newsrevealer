@@ -20,8 +20,11 @@ export interface GenerateResult {
   article_body: string;
   sentences_dt: { [key: string]: string };
   output_dt: { [key: string]: string };
-  parrot_dt: { [key: string]: string };
+  bot_dt: { [key: string]: string };
   long_summary_dt: { [key: string]: string };
+  metrics_dt: { [key: string]: { [key: string]: string } };
+  source_metrics_dt: { [key: string]: string };
+  classified_metrics_dt: { [key: string]: { [key: string]: string } };
 }
 
 export interface GenerateError {
