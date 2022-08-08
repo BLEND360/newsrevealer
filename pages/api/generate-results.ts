@@ -1,10 +1,11 @@
 import nc from "next-connect";
 import { NextApiRequest, NextApiResponse } from "next";
-import { auth } from "../../lib/server/middleware";
+import { auth, onError, sentry } from "../../lib/server/middleware";
 import { GenerateError, GenerateResult } from "../../lib/types";
 import { getResults } from "../../lib/server/s3";
 
-export default nc<NextApiRequest, NextApiResponse>()
+export default nc<NextApiRequest, NextApiResponse>({ onError })
+  .use(sentry)
   .use(auth)
   .get(
     async (

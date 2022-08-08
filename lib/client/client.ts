@@ -1,5 +1,7 @@
 import { GenerateRequest, GenerateResponse } from "../types";
-import bent from "bent";
+import { signIn } from "next-auth/react";
+import bent, { StatusError } from "bent";
+import { captureException } from "@sentry/nextjs";
 
 export function client(
   type: "string",
@@ -38,8 +40,18 @@ export function client<T extends bent.ValidResponse>(
 export function client(
   ...args: bent.Options[]
 ): bent.RequestFunction<bent.ValidResponse> {
+  const request = bent(...args, window.location.origin);
   return async (url, body, headers) => {
-    return await bent(...args, window.location.origin)(url, body, headers);
+    try {
+      return await request(url, body, headers);
+    } catch (error) {
+      if ((error as StatusError).statusCode === 401) {
+        signIn();
+      } else {
+        captureException(error);
+      }
+      throw error;
+    }
   };
 }
 
