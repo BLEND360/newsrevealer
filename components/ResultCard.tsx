@@ -2,6 +2,7 @@ import { Card } from "react-bootstrap";
 import styled from "styled-components";
 import { ReactNode } from "react";
 import CopyButton from "./CopyButton";
+import GrammarCheckButton from "./GrammarCheckButton";
 
 const FixedHeightCard = styled(Card)<{ height?: string }>`
   height: ${(props) => props.height};
@@ -38,6 +39,7 @@ export default function ResultCard({
               </Card.Subtitle>
             ))}
         </div>
+        <GrammarCheckButton text={body} />
         <CopyButton text={body} />
       </Card.Header>
       <ResultCardBody>

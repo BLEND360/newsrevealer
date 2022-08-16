@@ -31,3 +31,18 @@ export interface GenerateError {
   errorType?: string;
   errorMessage: string;
 }
+
+export interface GrammarCheckRequest {
+  text: string
+}
+
+export interface GrammarCheckResult {
+  corrected_text: string;
+}
+
+export interface AsyncGrammarCheckRequest extends GrammarCheckRequest {
+  bucket: string,
+  key: string,
+}
+
+export type GrammarCheckError = GenerateError;
