@@ -33,16 +33,16 @@ export interface GenerateError {
 }
 
 export interface GrammarCheckRequest {
-  text: string
+  text_list: string[];
 }
 
 export interface GrammarCheckResult {
-  corrected_text: string;
+  corrected_text_list: string[];
 }
 
 export interface AsyncGrammarCheckRequest extends GrammarCheckRequest {
-  bucket: string,
-  key: string,
+  bucket: string;
+  key: string;
 }
 
 export type GrammarCheckError = GenerateError;

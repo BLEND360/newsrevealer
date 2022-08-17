@@ -28,10 +28,12 @@ export default function ResultCard({
   headerBody,
   showGrammarCheckButton,
 }: ResultCardProps) {
+  const [correctedHeader, setCorrectedHeader] = useState<string | null>(null);
   const [correctedBody, setCorrectedBody] = useState<string | null>(null);
-  const headerBodyPrefix = headerBody ? `${headerBody}\n\n` : '';
+  const headerBodyPrefix = headerBody ? `${headerBody}\n\n` : "";
   const displayedBody = correctedBody ?? body;
   const displayedBodyAndHeader = `${headerBodyPrefix}${displayedBody}`;
+
   return (
     <FixedHeightCard className="mb-3" height={height}>
       <Card.Header className="d-flex align-items-center">
@@ -45,14 +47,27 @@ export default function ResultCard({
               </Card.Subtitle>
             ))}
         </div>
-        {showGrammarCheckButton &&
+        {showGrammarCheckButton && (
           <GrammarCheckButton
-            text={displayedBodyAndHeader}
-            onCorrection={t => setCorrectedBody(t)} /> }
+            text={headerBody ? [headerBody, body] : [body]}
+            onCorrection={([header, body]) => {
+              if (body) {
+                setCorrectedHeader(header);
+                setCorrectedBody(body);
+              } else {
+                setCorrectedBody(header);
+              }
+            }}
+          />
+        )}
         <CopyButton text={displayedBodyAndHeader} />
       </Card.Header>
       <ResultCardBody>
-        {headerBody && <Card.Text><strong>{headerBody}</strong></Card.Text>}
+        {(correctedHeader ?? headerBody) && (
+          <Card.Text>
+            <strong>{correctedHeader ?? headerBody}</strong>
+          </Card.Text>
+        )}
         <Card.Text>{displayedBody}</Card.Text>
       </ResultCardBody>
     </FixedHeightCard>
