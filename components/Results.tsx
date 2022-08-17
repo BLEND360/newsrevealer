@@ -39,6 +39,7 @@ export default function Results({ results, model }: ResultsProps) {
                     title={`${value.replace(/^./, (x) =>
                       x.toUpperCase()
                     )} Summary`}
+                    showGrammarCheckButton={true}
                     body={
                       model === "short"
                         ? results.output_dt?.[value]
