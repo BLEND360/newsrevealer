@@ -17,6 +17,7 @@ export interface ResultCardProps {
   body: string;
   children?: ReactNode;
   metrics?: { [key: string]: string };
+  showGrammarCheckButton?: boolean;
 }
 
 export default function ResultCard({
@@ -25,6 +26,7 @@ export default function ResultCard({
   body,
   children,
   metrics,
+  showGrammarCheckButton,
 }: ResultCardProps) {
   const [correctedBody, setCorrectedBody] = useState<string | null>(null);
   return (
@@ -40,7 +42,8 @@ export default function ResultCard({
               </Card.Subtitle>
             ))}
         </div>
-        <GrammarCheckButton text={body} onCorrection={t => setCorrectedBody(t)} />
+        {showGrammarCheckButton &&
+          <GrammarCheckButton text={body} onCorrection={t => setCorrectedBody(t)} /> }
         <CopyButton text={correctedBody ?? body} />
       </Card.Header>
       <ResultCardBody>
