@@ -44,7 +44,7 @@ export default function ResultCard({
         <CopyButton text={correctedBody ?? body} />
       </Card.Header>
       <ResultCardBody>
-        {children ?? <Card.Text>{correctedBody ?? body}</Card.Text>}
+        {children ?? <Card.Text>{body}</Card.Text>}
       </ResultCardBody>
     </FixedHeightCard>
   );
