@@ -1,6 +1,6 @@
 import { Card } from "react-bootstrap";
 import styled from "styled-components";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import CopyButton from "./CopyButton";
 import GrammarCheckButton from "./GrammarCheckButton";
 
@@ -26,6 +26,7 @@ export default function ResultCard({
   children,
   metrics,
 }: ResultCardProps) {
+  const [correctedBody, setCorrectedBody] = useState<string | null>(null);
   return (
     <FixedHeightCard className="mb-3" height={height}>
       <Card.Header className="d-flex align-items-center">
@@ -39,11 +40,11 @@ export default function ResultCard({
               </Card.Subtitle>
             ))}
         </div>
-        <GrammarCheckButton text={body} />
-        <CopyButton text={body} />
+        <GrammarCheckButton text={body} onCorrection={t => setCorrectedBody(t)} />
+        <CopyButton text={correctedBody ?? body} />
       </Card.Header>
       <ResultCardBody>
-        {children ?? <Card.Text>{body}</Card.Text>}
+        {children ?? <Card.Text>{correctedBody ?? body}</Card.Text>}
       </ResultCardBody>
     </FixedHeightCard>
   );
