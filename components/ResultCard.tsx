@@ -43,11 +43,11 @@ export default function ResultCard({
             ))}
         </div>
         {showGrammarCheckButton &&
-          <GrammarCheckButton text={body} onCorrection={t => setCorrectedBody(t)} /> }
+          <GrammarCheckButton text={correctedBody ?? body} onCorrection={t => setCorrectedBody(t)} /> }
         <CopyButton text={correctedBody ?? body} />
       </Card.Header>
       <ResultCardBody>
-        {children ?? <Card.Text>{body}</Card.Text>}
+        {children ?? <Card.Text>{correctedBody ?? body}</Card.Text>}
       </ResultCardBody>
     </FixedHeightCard>
   );
