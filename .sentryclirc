@@ -1,0 +1,7 @@
+[defaults]
+url=https://sentry.io/
+org=blend360
+project=newsrevealer
+
+[auth]
+token=368e7f0102eb4ebeade941dd1383079782c44e211b35467c93ca6cc5d8df3db7

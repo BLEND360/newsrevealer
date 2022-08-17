@@ -13,6 +13,7 @@ new PipelineStack(app, "newsrevealer-pipeline-dev", {
     region: "us-east-1",
   },
   stage: "dev",
+  environment: "dev",
 });
 new PipelineStack(app, "newsrevealer-pipeline-stable", {
   branch: "main",
@@ -25,4 +26,5 @@ new PipelineStack(app, "newsrevealer-pipeline-stable", {
     region: "us-east-1",
   },
   stage: "stable",
+  environment: "stable",
 });
