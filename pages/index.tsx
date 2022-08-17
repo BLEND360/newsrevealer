@@ -35,6 +35,7 @@ export default function Index({ warning, domains }: IndexProps) {
         onMessageChange={setMessage}
         onResultsChange={setResults}
         onStatusChange={setStatus}
+        onSubmit={() => setResults(null)}
       />
       {results && <Results {...results} />}
       <Modal show={showAlert} onHide={() => setShowAlert(false)}>
