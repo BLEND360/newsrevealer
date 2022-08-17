@@ -1,7 +1,7 @@
 import nc from "next-connect";
 import { NextApiRequest, NextApiResponse } from "next";
 import { auth } from "../../lib/server/middleware";
-import { GenerateError, GenerateResult } from "../../lib/types";
+import { GenerateError, GenerateResult, GrammarCheckResult } from "../../lib/types";
 import { getResults } from "../../lib/server/s3";
 
 export default nc<NextApiRequest, NextApiResponse>()
@@ -11,7 +11,7 @@ export default nc<NextApiRequest, NextApiResponse>()
       req,
       res: NextApiResponse<{
         status: "PENDING" | "DONE";
-        result?: GenerateResult | GenerateError;
+        result?: GenerateResult | GrammarCheckResult | GenerateError;
       }>
     ) => {
       const result = await getResults(
