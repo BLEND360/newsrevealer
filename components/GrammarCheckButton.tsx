@@ -6,10 +6,11 @@ import { client } from "../lib/client/client";
 import { GenerateResult, GrammarCheckResult, GrammarCheckError, GenerateResponse } from "../lib/types";
 
 export interface GrammarCheckButtonProps {
+  onCorrection: (text: string) => void;
   text: string;
 }
 
-export default function GrammarCheckButton({ text }: GrammarCheckButtonProps) {
+export default function GrammarCheckButton({ onCorrection, text }: GrammarCheckButtonProps) {
   const [tooltip, setTooltip] = useState("Check Grammar");
   const [disabled, setDisabled] = useState(false);
   const [response, setResponse] = useState<null | GenerateResponse>(null);
@@ -23,13 +24,14 @@ export default function GrammarCheckButton({ text }: GrammarCheckButtonProps) {
         const res = await client<{
           status: 'PENDING' | 'DONE';
           result?: GrammarCheckResult | GrammarCheckError;
-        }>('json')(`/api/grammar-check?bucket=${response.bucket}&key=${response.key}`);
+        }>('json')(`/api/generate-results?bucket=${response.bucket}&key=${response.key}`);
         if (res.status === "DONE") {
           if ("errorMessage" in res.result!) {
             setTooltip("Completed but had an error");
           } else {
             setTooltip("Check Grammar");
             setDisabled(false);
+            onCorrection(res.result!.corrected_text);
           }
           setResponse(null);
         }
