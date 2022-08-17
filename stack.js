@@ -74,6 +74,7 @@ module.exports = class AppStack extends Stack {
         actions: ["lambda:InvokeFunction"],
         resources: [
           "arn:aws:lambda:us-east-1:169196863399:function:avrioc_docker:*",
+          "arn:aws:lambda:us-east-1:169196863399:function:avrioc_grammar_lambda:*",
         ],
       })
     );
