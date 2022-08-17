@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "args": ["dev"],
+      "env": {"NEXT_PUBLIC_STAGE": "dev"},
+      "name": "dev",
+      "program": "/usr/bin/yarn",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    }
+  ],
+  "version": "0.2.0"
+}
