@@ -37,6 +37,7 @@ export interface GenerateFormProps {
   onResultsChange: (results: ResultsProps | null) => void;
   onStatusChange: (status: string) => void;
   onMessageChange: (message: string | null) => void;
+  onSubmit: () => void;
 }
 
 export default function GenerateForm({
@@ -45,6 +46,7 @@ export default function GenerateForm({
   onResultsChange,
   onMessageChange,
   onStatusChange,
+  onSubmit,
 }: GenerateFormProps) {
   const { data } = useSWR("/api/topics", client<{ key: string }[]>("json"));
 
@@ -92,6 +94,7 @@ export default function GenerateForm({
   }, [onMessageChange, onResultsChange, onStatusChange, response]);
 
   async function handleSubmit(values: GenerateRequest) {
+    onSubmit();
     onStatusChange("loading");
     onMessageChange(null);
     try {
