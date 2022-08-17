@@ -15,7 +15,7 @@ export interface ResultCardProps {
   height?: string;
   title: string;
   body: string;
-  children?: ReactNode;
+  headerBody?: string | null;
   metrics?: { [key: string]: string };
   showGrammarCheckButton?: boolean;
 }
@@ -24,11 +24,14 @@ export default function ResultCard({
   height,
   title,
   body,
-  children,
   metrics,
+  headerBody,
   showGrammarCheckButton,
 }: ResultCardProps) {
   const [correctedBody, setCorrectedBody] = useState<string | null>(null);
+  const headerBodyPrefix = headerBody ? `${headerBody}\n\n` : '';
+  const displayedBody = correctedBody ?? body;
+  const displayedBodyAndHeader = `${headerBodyPrefix}${displayedBody}`;
   return (
     <FixedHeightCard className="mb-3" height={height}>
       <Card.Header className="d-flex align-items-center">
@@ -43,11 +46,14 @@ export default function ResultCard({
             ))}
         </div>
         {showGrammarCheckButton &&
-          <GrammarCheckButton text={correctedBody ?? body} onCorrection={t => setCorrectedBody(t)} /> }
-        <CopyButton text={correctedBody ?? body} />
+          <GrammarCheckButton
+            text={displayedBodyAndHeader}
+            onCorrection={t => setCorrectedBody(t)} /> }
+        <CopyButton text={displayedBodyAndHeader} />
       </Card.Header>
       <ResultCardBody>
-        {children ?? <Card.Text>{correctedBody ?? body}</Card.Text>}
+        {headerBody && <Card.Text><strong>{headerBody}</strong></Card.Text>}
+        <Card.Text>{displayedBody}</Card.Text>
       </ResultCardBody>
     </FixedHeightCard>
   );

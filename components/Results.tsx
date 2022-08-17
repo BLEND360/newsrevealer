@@ -44,32 +44,14 @@ export default function Results({ results, model }: ResultsProps) {
                       model === "short"
                         ? results.output_dt?.[value]
                         : model === "long"
-                        ? results.output_dt?.[value] +
-                          "\n\n" +
-                          results.long_summary_dt?.[value]
+                        ? results.long_summary_dt?.[value]
                         : model === "bot"
                         ? results.bot_dt?.[value]
                         : ""
                     }
+                    headerBody={model === "long" ? results.output_dt?.[value] : null}
                     metrics={results.metrics_dt?.[value]}
-                  >
-                    {model === "short" && (
-                      <Card.Text>{results.output_dt?.[value]}</Card.Text>
-                    )}
-                    {model === "long" && (
-                      <>
-                        <Card.Text>
-                          <strong>{results.output_dt?.[value]}</strong>
-                        </Card.Text>
-                        <Card.Text>
-                          {results.long_summary_dt?.[value]}
-                        </Card.Text>
-                      </>
-                    )}
-                    {model === "bot" && (
-                      <Card.Text>{results.bot_dt?.[value]}</Card.Text>
-                    )}
-                  </ResultCard>
+                  />
                 </Col>
               </Row>
             )
