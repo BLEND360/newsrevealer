@@ -1,9 +1,7 @@
 export interface GenerateRequest {
-  url?: string;
-  text?: string;
-  topics: string[];
-  confidence: number;
   model: string;
+  topic_dict: { [topic: string]: string };
+  url?: string;
 }
 
 export interface AsyncGenerateRequest extends GenerateRequest {
@@ -49,9 +47,10 @@ export interface AsyncGrammarCheckRequest extends GrammarCheckRequest {
 export type GrammarCheckError = GenerateError;
 
 export interface TopicScanRequest {
-  url?: string;
-  text?: string;
+  get_topics: boolean;
   confidence?: number;
+  text?: string;
+  url?: string;
 }
 
 export interface TopicScanResponse {
@@ -60,38 +59,41 @@ export interface TopicScanResponse {
     word_count: number;
     sentence_count: 0;
   };
-  topic_text: { [topic: string]: string; }
+  topic_text: { [topic: string]: string };
 }
 
-export interface AsyncTopicScanRequest extends TopicScanRequest {
+export type AsyncTopicScanRequest = TopicScanRequest & {
   bucket: string;
   key: string;
-}
+};
 
 export type TopicScanError = GenerateError;
 
 export interface SummarizerRequest {
-  url: string;
-  text: string;
+  text_dict: { [topic: string]: string };
+  url?: string;
   model: string;
-  debug: string;
 }
 
 export interface SummarizerResponse {
-  short_summary: string;
-  long_summary: string;
-  bot_summary: string;
-  parrot_summary: string;
-  summary_metrics: {
-    word_count: number;
-    sentence_count: number;
-    repeated_sentences: number;
-    similarity_percentage: number;
+  short_summary_dict: { [topic: string]: string };
+  long_summary_dict: { [topic: string]: string };
+  bot_summary_dict: { [topic: string]: string };
+  parrot_summary_dict: { [topic: string]: string };
+  summary_metrics_dict: {
+    [topic: string]: {
+      word_count: number;
+      sentence_count: number;
+      repeated_sentences: number;
+      similarity_percentage: number;
+    };
   };
-  source_metrics: {
-    word_count: 0;
-    sentence_count: 0;
-  }
+  source_metrics_dict: {
+    [topic: string]: {
+      word_count: 0;
+      sentence_count: 0;
+    };
+  };
 }
 
 export interface AsyncSummarizerRequest extends SummarizerRequest {

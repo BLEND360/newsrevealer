@@ -1,24 +1,30 @@
-import { Formik } from 'formik';
-import { useEffect, useState } from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
-import * as yup from 'yup';
+import { Formik } from "formik";
+import { pick } from "ramda";
+import { useEffect, useState } from "react";
+import { Button, Col, Form, Row } from "react-bootstrap";
+import * as yup from "yup";
 
-import { client, getSummaries, getTopics } from '../lib/client/client';
-import models from '../lib/models';
+import { client, getSummaries, getTopics } from "../lib/client/client";
+import models from "../lib/models";
 import {
-  GenerateError, GenerateRequest, GenerateResponse, GenerateResult,
-  TopicScanResponse
-} from '../lib/types';
-import DomainsButton from './DomainsButton';
-import FormGroup from './FormGroup';
-import FormRange from './FormRange';
+  GenerateError,
+  GenerateRequest,
+  GenerateResponse,
+  GenerateResult,
+  TopicScanRequest,
+} from "../lib/types";
+import DomainsButton from "./DomainsButton";
+import FormGroup from "./FormGroup";
+import FormRange from "./FormRange";
 import {
-  FormMultiCreatableSelect, FormMultiCreatableSelectProps, FormSelect,
-  FormSelectProps
-} from './FormSelect';
-import FormTextArea from './FormTextArea';
-import { ResultsProps } from './Results';
-import TimerButton from './TimerButton';
+  FormMultiCreatableSelect,
+  FormMultiCreatableSelectProps,
+  FormSelect,
+  FormSelectProps,
+} from "./FormSelect";
+import FormTextArea from "./FormTextArea";
+import { ResultsProps } from "./Results";
+import TimerButton from "./TimerButton";
 
 export interface GenerateFormProps {
   domains: string[];
@@ -39,10 +45,13 @@ export default function GenerateForm({
 }: GenerateFormProps) {
   const [copyPaste, setCopyPaste] = useState<boolean | null>(null);
   const [generateResponse, setGenerateResponse] = useState<
-    (GenerateResponse & { model: string }) | null
+    (GenerateResponse & { model: string }) | GenerateResponse | null
   >(null);
   const [isScanned, setIsScanned] = useState(false);
   const [availableTopics, setAvailableTopics] = useState<string[]>([]);
+  const [topicTextMap, setTopicTextMap] = useState<
+    { [topic: string]: string } | undefined
+  >(void 0);
 
   useEffect(() => {
     if (generateResponse) {
@@ -59,12 +68,23 @@ export default function GenerateForm({
               onMessageChange(res.result.errorMessage);
               onStatusChange("error");
             } else {
-              if ('topic_text' in res.result!) {
+              if ("topic_text" in res.result!) {
                 setAvailableTopics(Object.keys(res.result!.topic_text!));
-                onResultsChange({ results: res.result!, articleTextOnly: true });
+                setTopicTextMap(res.result!.topic_text!);
+                onResultsChange({
+                  results: res.result!,
+                  articleTextOnly: true,
+                });
                 onStatusChange("success");
               } else {
-                onResultsChange({ model: generateResponse.model, results: res.result! });
+                onResultsChange({
+                  model: (
+                    generateResponse as GenerateResponse & {
+                      model: string;
+                    }
+                  ).model,
+                  results: res.result!,
+                });
                 onStatusChange("success");
               }
             }
@@ -90,25 +110,36 @@ export default function GenerateForm({
 
   useEffect(() => {
     if (availableTopics && availableTopics.length > 0) {
-      onStatusChange('');
+      onStatusChange("");
     }
   }, [availableTopics, onStatusChange]);
 
-  async function handleSubmit(values: GenerateRequest) {
+  async function handleSubmit(values: GenerateRequest | TopicScanRequest) {
     onSubmit();
     onStatusChange("loading");
     if (availableTopics && availableTopics.length > 0) {
       onMessageChange(null);
+      const { model, url } = values as GenerateRequest;
       try {
-        const res = await getSummaries(values);
-        setGenerateResponse({...res, model: values.model });
+        const res = await getSummaries({
+          model,
+          topic_dict: pick((values as any).topics, topicTextMap),
+          url,
+        });
+        setGenerateResponse({
+          ...res,
+          model: (values as GenerateRequest).model,
+        });
       } catch (error) {
-        onStatusChange('error');
+        onStatusChange("error");
         console.log(error);
       }
     } else {
-      const res = await getTopics(values);
-      setGenerateResponse({...res, model: values.model });
+      const res = await getTopics({
+        ...(values as TopicScanRequest),
+        ...{ get_topics: true },
+      });
+      setGenerateResponse(res);
       setIsScanned(true);
     }
   }
@@ -117,6 +148,7 @@ export default function GenerateForm({
     <div className="bg-light rounded-3 p-4 mb-4">
       <Formik
         initialValues={{
+          get_topics: true,
           topics: [],
           model: "short",
           confidence: 0.6,
@@ -204,11 +236,10 @@ export default function GenerateForm({
                     label: x,
                   })}
                   options={
-                    availableTopics
-                      ?.map(key => ({
-                        value: key,
-                        label: key,
-                      })) ?? []
+                    availableTopics?.map((key) => ({
+                      value: key,
+                      label: key,
+                    })) ?? []
                   }
                 />
                 <FormGroup<
@@ -251,7 +282,7 @@ export default function GenerateForm({
                   isValid={isValid}
                   className="w-100"
                 >
-                  {isScanned ? 'Generate' : 'Scan'}
+                  {isScanned ? "Generate" : "Scan"}
                 </TimerButton>
               </Col>
               <Col xs="auto">
