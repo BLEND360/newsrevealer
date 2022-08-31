@@ -28,7 +28,7 @@ new PipelineStack(app, "newsrevealer-pipeline-stable", {
   stage: "stable",
   environment: "stable",
 });
-new PipelineStack(app, "newsrevealer-pipeline-stable", {
+new PipelineStack(app, "newsrevealer-pipeline-prod", {
   branch: "main",
   connection:
     "arn:aws:codestar-connections:us-east-1:169196863399:connection/b8443c0f-0bc7-4918-8fa4-7d4158b67897",
