@@ -60,9 +60,8 @@ export default function GenerateForm({
               onStatusChange("error");
             } else {
               if ('topic_text' in res.result!) {
-                console.log(res.result!);
-                console.log(Object.keys(res.result!.topic_text!));
                 setAvailableTopics(Object.keys(res.result!.topic_text!));
+                onResultsChange({ results: res.result!, articleTextOnly: true });
                 onStatusChange("success");
               } else {
                 onResultsChange({ model: generateResponse.model, results: res.result! });
@@ -262,6 +261,8 @@ export default function GenerateForm({
                     setCopyPaste(null);
                     resetForm();
                     onResultsChange(null);
+                    setIsScanned(false);
+                    setAvailableTopics([]);
                   }}
                 >
                   Clear State
