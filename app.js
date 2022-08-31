@@ -41,4 +41,4 @@ new PipelineStack(app, "newsrevealer-pipeline-stable", {
 //   stage: "stable",
 //   environment: "stable",
 // });
-// comment
+// comment2
