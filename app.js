@@ -28,8 +28,8 @@ const app = new App();
 //  stage: "stable",
 //  environment: "stable",
 //});
-new PipelineStack(app, "newsrevealer-pipeline-dev", {
-  branch: "dev",
+new PipelineStack(app, "newsrevealer-pipeline-production", {
+  branch: "main",
   connection:
     "arn:aws:codestar-connections:us-east-1:169196863399:connection/b8443c0f-0bc7-4918-8fa4-7d4158b67897",
   domain: "news-revealer.com",
@@ -38,8 +38,8 @@ new PipelineStack(app, "newsrevealer-pipeline-dev", {
     account: "169196863399",
     region: "us-east-1",
   },
-  stage: "dev",
-  environment: "dev",
+  stage: "stable",
+  environment: "stable",
 });
 // new PipelineStack(app, "newsrevealer-pipeline-prod", {
 //   branch: "main",
