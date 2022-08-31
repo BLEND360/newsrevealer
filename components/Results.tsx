@@ -16,7 +16,7 @@ export default function Results({ results, model, articleTextOnly }: ResultsProp
           height="40rem"
           title="Article Text"
           body={results.article_body}
-          metrics={results.source_metrics_dt}
+          metrics={results.source_metrics}
         />
       </Col>
       {!articleTextOnly &&

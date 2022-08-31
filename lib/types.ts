@@ -23,7 +23,7 @@ export interface GenerateResult {
   bot_dt: { [key: string]: string };
   long_summary_dt: { [key: string]: string };
   metrics_dt: { [key: string]: { [key: string]: string } };
-  source_metrics_dt: { [key: string]: string };
+  source_metrics: { [key: string]: string };
   classified_metrics_dt: { [key: string]: { [key: string]: string } };
   topic_text?: { [topic: string]: string };
 }
