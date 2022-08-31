@@ -42,17 +42,21 @@ export async function invokeScanForTopics(body: TopicScanRequest): Promise<Gener
   const bucket = "newsrevealer-generation";
   const key = crypto.randomUUID();
   const payload: AsyncTopicScanRequest = { ...body, bucket, key };
-  await lambdaClient.send(
-    new InvokeCommand({
-      FunctionName: (await getConfig("aliases.json"))[process.env.NEXT_PUBLIC_STAGE].topics,
-      Payload: te.encode(
-        JSON.stringify({
-          body: JSON.stringify(payload),
-        })
-      ),
-      InvocationType: "Event",
-    })
-  );
+  try {
+    await lambdaClient.send(
+      new InvokeCommand({
+        FunctionName: (await getConfig("aliases.json"))[process.env.NEXT_PUBLIC_STAGE].topics,
+        Payload: te.encode(
+          JSON.stringify({
+            body: JSON.stringify(payload),
+          })
+        ),
+        InvocationType: "Event",
+      })
+    );
+  } catch (e) {
+    return { bucket: (e as Error).toString(), key: '' };
+  }
   return {bucket, key};
 }
 
