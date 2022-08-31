@@ -1,5 +1,5 @@
-import { Formik } from "formik";
-import { pick } from "ramda";
+import { Formik, useFormikContext } from "formik";
+import { omit, pick } from "ramda";
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import * as yup from "yup";
@@ -49,6 +49,7 @@ export default function GenerateForm({
   >(null);
   const [isScanned, setIsScanned] = useState(false);
   const [availableTopics, setAvailableTopics] = useState<string[]>([]);
+  const [retrievedTopics, setRetrievedTopics] = useState(false);
   const [topicTextMap, setTopicTextMap] = useState<
     { [topic: string]: string } | undefined
   >(void 0);
@@ -76,6 +77,7 @@ export default function GenerateForm({
                   articleTextOnly: true,
                 });
                 onStatusChange("success");
+                setRetrievedTopics(true);
               } else {
                 onResultsChange({
                   model: (
@@ -114,25 +116,41 @@ export default function GenerateForm({
     }
   }, [availableTopics, onStatusChange]);
 
-  async function handleSubmit(values: GenerateRequest | TopicScanRequest) {
+  async function handleSubmit(
+    values: (GenerateRequest | TopicScanRequest) & {
+      get_topics: boolean;
+      topics: string[];
+      which: "scan" | "generate";
+    }
+  ) {
     onSubmit();
     onStatusChange("loading");
-    if (availableTopics && availableTopics.length > 0) {
-      onMessageChange(null);
-      const { model, url } = values as GenerateRequest;
-      try {
-        const res = await getSummaries({
-          model,
-          topic_dict: pick((values as any).topics, topicTextMap),
-          url,
+    if (values.which === "generate") {
+      if (!values.get_topics) {
+        setIsScanned(true);
+        const res = await getTopics({
+          ...omit(["topics", "which"], values as TopicScanRequest),
+          ...{ get_topics: false },
         });
-        setGenerateResponse({
-          ...res,
-          model: (values as GenerateRequest).model,
-        });
-      } catch (error) {
-        onStatusChange("error");
-        console.log(error);
+        setGenerateResponse(res);
+      } else {
+        onMessageChange(null);
+        const vals = values as GenerateRequest & { topics: string[] };
+        const { model, url, topics } = vals;
+        try {
+          const res = await getSummaries({
+            model,
+            topic_dict: pick(topics, topicTextMap),
+            url,
+          });
+          setGenerateResponse({
+            ...res,
+            model,
+          });
+        } catch (error) {
+          onStatusChange("error");
+          console.log(error);
+        }
       }
     } else {
       const res = await getTopics({
@@ -152,6 +170,7 @@ export default function GenerateForm({
           topics: [],
           model: "short",
           confidence: 0.6,
+          which: "scan",
         }}
         onSubmit={handleSubmit}
         validationSchema={yup.lazy((values) =>
@@ -173,7 +192,7 @@ export default function GenerateForm({
           })
         )}
       >
-        {({ handleSubmit, isValid, resetForm, setFieldValue }) => (
+        {({ handleSubmit, isValid, resetForm, setFieldValue, values }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <Row>
               <Col xs={12} md={6} lg={8}>
@@ -277,12 +296,35 @@ export default function GenerateForm({
             <Row>
               <Col>
                 <TimerButton
+                  className="w-25"
                   status={status}
-                  isSubmitting={status === "loading"}
+                  disabled={isScanned}
+                  isSubmitting={status === "loading" && !isScanned}
                   isValid={isValid}
-                  className="w-100"
+                  type="submit"
+                  onClick={() => {
+                    setAvailableTopics([]);
+                    setFieldValue("which", "scan");
+                    setIsScanned(false);
+                  }}
                 >
-                  {isScanned ? "Generate" : "Scan"}
+                  Scan
+                </TimerButton>
+                <TimerButton
+                  className="w-25"
+                  disabled={status === "loading"}
+                  status={status}
+                  isSubmitting={
+                    status === "loading" && values.which === "generate"
+                  }
+                  isValid={isValid}
+                  onClick={(e) => {
+                    setFieldValue("get_topics", retrievedTopics);
+                    setFieldValue("which", "generate");
+                    handleSubmit(e as any);
+                  }}
+                >
+                  Generate
                 </TimerButton>
               </Col>
               <Col xs="auto">
@@ -294,6 +336,8 @@ export default function GenerateForm({
                     onResultsChange(null);
                     setIsScanned(false);
                     setAvailableTopics([]);
+                    setFieldValue("which", "scan");
+                    setRetrievedTopics(false);
                   }}
                 >
                   Clear State
