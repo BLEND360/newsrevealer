@@ -38,8 +38,8 @@ new PipelineStack(app, "newsrevealer-pipeline-dev", {
     account: "169196863399",
     region: "us-east-1",
   },
-  stage: "stable",
-  environment: "stable",
+  stage: "dev",
+  environment: "dev",
 });
 // new PipelineStack(app, "newsrevealer-pipeline-prod", {
 //   branch: "main",
