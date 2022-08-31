@@ -48,41 +48,42 @@ export default function GenerateForm({
   onStatusChange,
   onSubmit,
 }: GenerateFormProps) {
-  const { data } = useSWR("/api/topics", client<{ key: string }[]>("json"));
-
+  const [shouldFetch, setShouldFetch] = useState(false);
+  const { data: availableTopics } = useSWR(shouldFetch ? "/api/topics" : null, client<{ key: string }[]>("json"));
   const [copyPaste, setCopyPaste] = useState<boolean | null>(null);
-  const [response, setResponse] = useState<
+  const [generateResponse, setGenerateResponse] = useState<
     (GenerateResponse & { model: string }) | null
   >(null);
+  const [isScanned, setIsScanned] = useState(false);
 
   useEffect(() => {
-    if (response) {
+    if (generateResponse) {
       const id = setInterval(async () => {
         try {
           const res = await client<{
             status: "PENDING" | "DONE";
             result?: GenerateResult | GenerateError;
           }>("json")(
-            `/api/generate-results?bucket=${response.bucket}&key=${response.key}`
+            `/api/generate-results?bucket=${generateResponse.bucket}&key=${generateResponse.key}`
           );
           if (res.status === "DONE") {
             if ("errorMessage" in res.result!) {
               onMessageChange(res.result.errorMessage);
               onStatusChange("error");
             } else {
-              onResultsChange({ model: response.model, results: res.result! });
+              onResultsChange({ model: generateResponse.model, results: res.result! });
               onStatusChange("success");
             }
-            setResponse(null);
+            setGenerateResponse(null);
           }
         } catch (error) {
           onStatusChange("error");
           console.log(error);
-          setResponse(null);
+          setGenerateResponse(null);
         }
       }, 2000);
       const timeoutId = setTimeout(() => {
-        setResponse(null);
+        setGenerateResponse(null);
         onMessageChange("Request timed out.");
         onStatusChange("error");
       }, 180000);
@@ -91,20 +92,30 @@ export default function GenerateForm({
         clearInterval(id);
       };
     }
-  }, [onMessageChange, onResultsChange, onStatusChange, response]);
+  }, [onMessageChange, onResultsChange, onStatusChange, generateResponse]);
+
+  useEffect(() => {
+    if (availableTopics && availableTopics.length > 0) {
+      onStatusChange('');
+    }
+  }, [availableTopics, onStatusChange]);
 
   async function handleSubmit(values: GenerateRequest) {
     onSubmit();
     onStatusChange("loading");
-    onMessageChange(null);
-    try {
-      const res = await getSummaries(values);
-      setResponse({ ...res, model: values.model });
-    } catch (error) {
-      onStatusChange("error");
-      console.log(error);
+    if (availableTopics && availableTopics.length > 0) {
+      onMessageChange(null);
+      try {
+        const res = await getSummaries(values);
+        setGenerateResponse({...res, model: values.model });
+      } catch (error) {
+        onStatusChange('error');
+        console.log(error);
+      }
+    } else {
+      setShouldFetch(true);
+      setIsScanned(true);
     }
-    await client("POST", 204)("/api/topics", values.topics);
   }
 
   return (
@@ -198,7 +209,7 @@ export default function GenerateForm({
                     label: x,
                   })}
                   options={
-                    data
+                    availableTopics
                       ?.filter(({ key }) => key !== "all")
                       ?.map(({ key }) => ({
                         value: key,
@@ -246,7 +257,7 @@ export default function GenerateForm({
                   isValid={isValid}
                   className="w-100"
                 >
-                  Generate
+                  {isScanned ? 'Generate' : 'Scan'}
                 </TimerButton>
               </Col>
               <Col xs="auto">
