@@ -1,4 +1,4 @@
-import { GenerateRequest, GenerateResponse } from "../types";
+import { GenerateRequest, GenerateResponse, SummarizerRequest, TopicScanRequest } from "../types";
 import { signIn } from "next-auth/react";
 import bent, { StatusError } from "bent";
 import { captureException } from "@sentry/nextjs";
@@ -63,4 +63,20 @@ export async function getSummaries(
     "POST",
     202
   )("/api/generate", input);
+}
+
+export async function getTopics(input: TopicScanRequest): Promise<GenerateResponse> {
+  return await client<GenerateResponse>(
+    "json",
+    "POST",
+    202
+  )("/api/topics", input);
+}
+
+export async function runSummarizer(input: SummarizerRequest): Promise<GenerateResponse> {
+  return await client<GenerateResponse>(
+    "json",
+    "POST",
+    202
+  )("/api/summarizer", input);
 }

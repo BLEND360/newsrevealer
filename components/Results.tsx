@@ -4,10 +4,11 @@ import ResultCard from "./ResultCard";
 
 export interface ResultsProps {
   results: GenerateResult;
-  model: string;
+  model?: string;
+  articleTextOnly?: boolean;
 }
 
-export default function Results({ results, model }: ResultsProps) {
+export default function Results({ results, model, articleTextOnly }: ResultsProps) {
   return (
     <Row>
       <Col xs={12} lg={4}>
@@ -18,7 +19,8 @@ export default function Results({ results, model }: ResultsProps) {
           metrics={results.source_metrics_dt}
         />
       </Col>
-      <Col xs={12} lg={8}>
+      {!articleTextOnly &&
+        <Col xs={12} lg={8}>
         {Object.keys(results.sentences_dt).map(
           (value) =>
             results.sentences_dt[value] && (
@@ -56,7 +58,7 @@ export default function Results({ results, model }: ResultsProps) {
               </Row>
             )
         )}
-      </Col>
+        </Col>}
     </Row>
   );
 }
