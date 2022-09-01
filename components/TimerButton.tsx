@@ -49,6 +49,7 @@ export default function TimerButton({
 
   return (
     <TransitionedButton
+      className="w-100"
       type="submit"
       disabled={isSubmitting || disabled}
       {...props}

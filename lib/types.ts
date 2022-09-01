@@ -1,9 +1,8 @@
 export interface GenerateRequest {
+  model: string;
+  topic_dict: { [topic: string]: string };
   url?: string;
   text?: string;
-  topics: string[];
-  confidence: number;
-  model: string;
 }
 
 export interface AsyncGenerateRequest extends GenerateRequest {
@@ -11,23 +10,25 @@ export interface AsyncGenerateRequest extends GenerateRequest {
   key: string;
 }
 
-export interface GenerateResponse {
+export interface AsyncResponse {
   bucket: string;
   key: string;
 }
 
 export interface GenerateResult {
-  article_body: string;
-  sentences_dt: { [key: string]: string };
-  output_dt: { [key: string]: string };
-  bot_dt: { [key: string]: string };
-  long_summary_dt: { [key: string]: string };
-  metrics_dt: { [key: string]: { [key: string]: string } };
-  source_metrics_dt: { [key: string]: string };
-  classified_metrics_dt: { [key: string]: { [key: string]: string } };
+  short_summary_dict: { [topic: string]: string };
+  long_summary_dict: { [topic: string]: string };
+  bot_summary_dict: { [topic: string]: string };
+  parrot_summary_dict: { [topic: string]: string };
+  summary_metrics_dict: {
+    [topic: string]: { [metric: string]: string };
+  };
+  source_metrics_dict: {
+    [topic: string]: { [metric: string]: string };
+  };
 }
 
-export interface GenerateError {
+export interface ResponseError {
   errorType?: string;
   errorMessage: string;
 }
@@ -45,4 +46,20 @@ export interface AsyncGrammarCheckRequest extends GrammarCheckRequest {
   key: string;
 }
 
-export type GrammarCheckError = GenerateError;
+export interface TopicScanRequest {
+  get_topics: boolean;
+  confidence?: number;
+  text?: string;
+  url?: string;
+}
+
+export interface TopicScanResult {
+  article_body: string;
+  source_metrics: { [metric: string]: string };
+  topic_text: { [topic: string]: string };
+}
+
+export type AsyncTopicScanRequest = TopicScanRequest & {
+  bucket: string;
+  key: string;
+};

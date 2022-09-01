@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { client } from "../lib/client/client";
 import {
   GrammarCheckResult,
-  GrammarCheckError,
-  GenerateResponse,
   GrammarCheckRequest,
+  AsyncResponse,
+  ResponseError,
 } from "../lib/types";
 
 export interface GrammarCheckButtonProps {
@@ -21,7 +21,7 @@ export default function GrammarCheckButton({
 }: GrammarCheckButtonProps) {
   const [tooltip, setTooltip] = useState("Check Grammar");
   const [disabled, setDisabled] = useState(false);
-  const [response, setResponse] = useState<null | GenerateResponse>(null);
+  const [response, setResponse] = useState<null | AsyncResponse>(null);
 
   useEffect(() => {
     setTooltip("Check Grammar");
@@ -33,7 +33,7 @@ export default function GrammarCheckButton({
         try {
           const res = await client<{
             status: "PENDING" | "DONE";
-            result?: GrammarCheckResult | GrammarCheckError;
+            result?: GrammarCheckResult | ResponseError;
           }>("json")(
             `/api/generate-results?bucket=${response.bucket}&key=${response.key}`
           );
@@ -76,7 +76,7 @@ export default function GrammarCheckButton({
           setDisabled(true);
           try {
             const body: GrammarCheckRequest = { text_list: text };
-            const res = await client<GenerateResponse>(
+            const res = await client<AsyncResponse>(
               "json",
               "POST",
               202
