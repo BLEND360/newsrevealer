@@ -1,17 +1,16 @@
-import { Formik, useFormikContext } from "formik";
-import { omit, pick } from "ramda";
-import { useEffect, useState } from "react";
+import { Formik } from "formik";
+import { useEffect, useRef, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import * as yup from "yup";
-
 import { client, getSummaries, getTopics } from "../lib/client/client";
 import models from "../lib/models";
 import {
-  GenerateError,
+  AsyncResponse,
   GenerateRequest,
-  GenerateResponse,
   GenerateResult,
+  ResponseError,
   TopicScanRequest,
+  TopicScanResult,
 } from "../lib/types";
 import DomainsButton from "./DomainsButton";
 import FormGroup from "./FormGroup";
@@ -25,6 +24,7 @@ import {
 import FormTextArea from "./FormTextArea";
 import { ResultsProps } from "./Results";
 import TimerButton from "./TimerButton";
+import { pick } from "../lib/utils";
 
 export interface GenerateFormProps {
   domains: string[];
@@ -33,73 +33,71 @@ export interface GenerateFormProps {
   onStatusChange: (status: string) => void;
   onMessageChange: (message: string | null) => void;
   onSubmit: () => void;
+  results: ResultsProps | null;
 }
 
 export default function GenerateForm({
   domains,
   status,
+  results,
   onResultsChange,
   onMessageChange,
   onStatusChange,
   onSubmit,
 }: GenerateFormProps) {
   const [copyPaste, setCopyPaste] = useState<boolean | null>(null);
-  const [generateResponse, setGenerateResponse] = useState<
-    (GenerateResponse & { model: string }) | GenerateResponse | null
-  >(null);
-  const [isScanned, setIsScanned] = useState(false);
-  const [availableTopics, setAvailableTopics] = useState<string[]>([]);
-  const [retrievedTopics, setRetrievedTopics] = useState(false);
-  const [topicTextMap, setTopicTextMap] = useState<
-    { [topic: string]: string } | undefined
-  >(void 0);
+  const [response, setResponse] = useState<AsyncResponse | null>(null);
+  const [model, setModel] = useState<string | null>(null);
+  const [topics, setTopics] = useState<string[]>([]);
+  const mustGenerate = useRef<{ url?: string; text?: string } | null>(null);
 
   useEffect(() => {
-    if (generateResponse) {
+    if (response) {
       const id = setInterval(async () => {
         try {
           const res = await client<{
             status: "PENDING" | "DONE";
-            result?: GenerateResult | GenerateError;
+            result?: GenerateResult | TopicScanResult | ResponseError;
           }>("json")(
-            `/api/generate-results?bucket=${generateResponse.bucket}&key=${generateResponse.key}`
+            `/api/generate-results?bucket=${response.bucket}&key=${response.key}`
           );
           if (res.status === "DONE") {
             if ("errorMessage" in res.result!) {
               onMessageChange(res.result.errorMessage);
               onStatusChange("error");
             } else {
-              if ("topic_text" in res.result!) {
-                setAvailableTopics(Object.keys(res.result!.topic_text!));
-                setTopicTextMap(res.result!.topic_text!);
-                onResultsChange({
-                  results: res.result!,
-                  articleTextOnly: true,
+              onResultsChange({
+                results: { ...results?.results, ...res.result! },
+                model,
+                topics,
+              });
+              if (
+                mustGenerate.current &&
+                model &&
+                "article_body" in res.result!
+              ) {
+                const r = await getSummaries({
+                  model: model,
+                  text: mustGenerate.current.text,
+                  url: mustGenerate.current.url,
+                  topic_dict: { all: res.result!.article_body },
                 });
-                onStatusChange("success");
-                setRetrievedTopics(true);
-              } else {
-                onResultsChange({
-                  model: (
-                    generateResponse as GenerateResponse & {
-                      model: string;
-                    }
-                  ).model,
-                  results: res.result!,
-                });
-                onStatusChange("success");
+                setResponse(r);
+                mustGenerate.current = null;
+                return;
               }
+              onStatusChange("success");
             }
-            setGenerateResponse(null);
+            setResponse(null);
           }
         } catch (error) {
           onStatusChange("error");
           console.log(error);
-          setGenerateResponse(null);
+          setResponse(null);
         }
       }, 2000);
       const timeoutId = setTimeout(() => {
-        setGenerateResponse(null);
+        setResponse(null);
         onMessageChange("Request timed out.");
         onStatusChange("error");
       }, 180000);
@@ -108,57 +106,60 @@ export default function GenerateForm({
         clearInterval(id);
       };
     }
-  }, [onMessageChange, onResultsChange, onStatusChange, generateResponse]);
-
-  useEffect(() => {
-    if (availableTopics && availableTopics.length > 0) {
-      onStatusChange("");
-    }
-  }, [availableTopics, onStatusChange]);
+  }, [
+    model,
+    onMessageChange,
+    onResultsChange,
+    onStatusChange,
+    response,
+    results?.results,
+    topics,
+  ]);
 
   async function handleSubmit(
-    values: (GenerateRequest | TopicScanRequest) & {
-      get_topics: boolean;
-      topics: string[];
-      which: "scan" | "generate";
+    values: Partial<GenerateRequest & TopicScanRequest> & { topics: string[] }
+  ) {
+    onStatusChange("loading");
+    onMessageChange(null);
+    try {
+      if (results?.results?.article_body && values.model) {
+        const res = await getSummaries({
+          model: values.model,
+          text: values.text,
+          url: values.url,
+          topic_dict:
+            values.topics.length === 0
+              ? { all: results?.results?.article_body! }
+              : pick(results.results.topic_text, values.topics),
+        });
+        setResponse(res);
+        setModel(values.model);
+        setTopics(values.topics.length === 0 ? ["all"] : values.topics);
+      } else {
+        mustGenerate.current = { url: values.url, text: values.text };
+        const res = await getTopics({ ...values, get_topics: false });
+        setResponse(res);
+        setModel(values.model ?? null);
+        setTopics(["all"]);
+      }
+    } catch (error) {
+      onStatusChange("error");
+      console.log(error);
     }
+  }
+
+  async function handleScan(
+    values: Partial<GenerateRequest & TopicScanRequest>
   ) {
     onSubmit();
     onStatusChange("loading");
-    if (values.which === "generate") {
-      if (!values.get_topics) {
-        setIsScanned(true);
-        const res = await getTopics({
-          ...omit(["topics", "which"], values as TopicScanRequest),
-          ...{ get_topics: false },
-        });
-        setGenerateResponse(res);
-      } else {
-        onMessageChange(null);
-        const vals = values as GenerateRequest & { topics: string[] };
-        const { model, url, topics } = vals;
-        try {
-          const res = await getSummaries({
-            model,
-            topic_dict: pick(topics, topicTextMap),
-            url,
-          });
-          setGenerateResponse({
-            ...res,
-            model,
-          });
-        } catch (error) {
-          onStatusChange("error");
-          console.log(error);
-        }
-      }
-    } else {
-      const res = await getTopics({
-        ...(values as TopicScanRequest),
-        ...{ get_topics: true },
-      });
-      setGenerateResponse(res);
-      setIsScanned(true);
+    onMessageChange(null);
+    try {
+      const res = await getTopics({ ...values, get_topics: true });
+      setResponse(res);
+    } catch (error) {
+      onStatusChange("error");
+      console.log(error);
     }
   }
 
@@ -170,7 +171,6 @@ export default function GenerateForm({
           topics: [],
           model: "short",
           confidence: 0.6,
-          which: "scan",
         }}
         onSubmit={handleSubmit}
         validationSchema={yup.lazy((values) =>
@@ -255,10 +255,12 @@ export default function GenerateForm({
                     label: x,
                   })}
                   options={
-                    availableTopics?.map((key) => ({
-                      value: key,
-                      label: key,
-                    })) ?? []
+                    results?.results?.topic_text
+                      ? Object.keys(results.results.topic_text).map((key) => ({
+                          value: key,
+                          label: key,
+                        }))
+                      : []
                   }
                 />
                 <FormGroup<
@@ -296,33 +298,21 @@ export default function GenerateForm({
             <Row>
               <Col>
                 <TimerButton
-                  className="w-25"
                   status={status}
-                  disabled={isScanned}
-                  isSubmitting={status === "loading" && !isScanned}
+                  isSubmitting={status === "loading"}
                   isValid={isValid}
-                  type="submit"
-                  onClick={() => {
-                    setAvailableTopics([]);
-                    setFieldValue("which", "scan");
-                    setIsScanned(false);
-                  }}
+                  onClick={() => handleScan(values)}
                 >
                   Scan
                 </TimerButton>
+              </Col>
+              <Col>
                 <TimerButton
-                  className="w-25"
                   disabled={status === "loading"}
                   status={status}
-                  isSubmitting={
-                    status === "loading" && values.which === "generate"
-                  }
+                  isSubmitting={status === "loading"}
                   isValid={isValid}
-                  onClick={(e) => {
-                    setFieldValue("get_topics", retrievedTopics);
-                    setFieldValue("which", "generate");
-                    handleSubmit(e as any);
-                  }}
+                  type="submit"
                 >
                   Generate
                 </TimerButton>
@@ -334,10 +324,6 @@ export default function GenerateForm({
                     setCopyPaste(null);
                     resetForm();
                     onResultsChange(null);
-                    setIsScanned(false);
-                    setAvailableTopics([]);
-                    setFieldValue("which", "scan");
-                    setRetrievedTopics(false);
                   }}
                 >
                   Clear State

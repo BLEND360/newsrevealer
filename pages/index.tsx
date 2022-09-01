@@ -1,4 +1,4 @@
-import { Container, Alert, Modal } from "react-bootstrap";
+import { Container, Alert } from "react-bootstrap";
 import { useState } from "react";
 import Results, { ResultsProps } from "../components/Results";
 import { GetStaticProps } from "next";
@@ -6,18 +6,13 @@ import { getConfig } from "../lib/server/s3";
 import GenerateForm from "../components/GenerateForm";
 
 interface IndexProps {
-  warning: {
-    warningText?: string;
-    warningHeading?: string;
-  } | null;
   domains: string[];
 }
 
-export default function Index({ warning, domains }: IndexProps) {
+export default function Index({ domains }: IndexProps) {
   const [status, setStatus] = useState("ready");
   const [message, setMessage] = useState<string | null>(null);
   const [results, setResults] = useState<ResultsProps | null>(null);
-  const [showAlert, setShowAlert] = useState(!!warning);
 
   return (
     <Container>
@@ -31,6 +26,7 @@ export default function Index({ warning, domains }: IndexProps) {
       </Alert>
       <GenerateForm
         domains={domains}
+        results={results}
         status={status}
         onMessageChange={setMessage}
         onResultsChange={setResults}
@@ -38,30 +34,15 @@ export default function Index({ warning, domains }: IndexProps) {
         onSubmit={() => setResults(null)}
       />
       {results && <Results {...results} />}
-      <Modal show={showAlert} onHide={() => setShowAlert(false)}>
-        <Alert
-          variant="danger"
-          className="mb-0"
-          dismissible
-          onClose={() => setShowAlert(false)}
-        >
-          <Alert.Heading>{warning?.warningHeading}</Alert.Heading>
-          {warning?.warningText?.split("\n")?.map((line, index) => (
-            <p key={index}>{line}</p>
-          ))}
-        </Alert>
-      </Modal>
     </Container>
   );
 }
 
 export const getStaticProps: GetStaticProps<IndexProps> = async () => {
-  const warnings = await getConfig("warnings.json");
   const domains = await getConfig("domains.json");
 
   return {
     props: {
-      warning: warnings[process.env.NEXT_PUBLIC_STAGE] ?? null,
       domains,
     },
     revalidate: 300,
