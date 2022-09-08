@@ -28,7 +28,6 @@ const app = new App();
 //   stage: "stable",
 //   environment: "stable",
 // });
-
 new PipelineStack(app, "newsrevealer-pipeline-dev-me", {
   branch: "dev",
   connection:
