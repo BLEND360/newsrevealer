@@ -28,3 +28,16 @@ new PipelineStack(app, "newsrevealer-pipeline-stable", {
   stage: "stable",
   environment: "stable",
 });
+new PipelineStack(app, "newsrevealer-pipeline-dev-me", {
+  branch: "dev",
+  connection:
+    "arn:aws:codestar-connections:us-east-1:224306498215:connection/02d5e62d-6131-4197-9545-246edc80b55d",
+  domain: "dev.news-revealer.io",
+  hostedZone: "Z0706004BXNIVGD164N9",
+  env: {
+    account: "224306498215",
+    region: "us-east-1",
+  },
+  stage: "stable",
+  environment: "stable",
+});

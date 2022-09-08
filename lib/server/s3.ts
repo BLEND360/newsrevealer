@@ -11,7 +11,7 @@ const s3Client = new S3Client({ region: "us-east-1" });
 export async function getConfig(key: string): Promise<any> {
   const response = await s3Client.send(
     new GetObjectCommand({
-      Bucket: "newsrevealer-config",
+      Bucket: "newsrevealer-me-config",
       Key: key,
     })
   );
