@@ -29,7 +29,7 @@ const app = new App();
 //   environment: "stable",
 // });
 
-new PipelineStack(app, "newsrevealer-pipeline-dev-alt", {
+new PipelineStack(app, "newsrevealer-pipeline-dev-alt2", {
   branch: "dev",
   connection:
     "arn:aws:codestar-connections:us-east-1:224306498215:connection/02d5e62d-6131-4197-9545-246edc80b55d",
@@ -42,4 +42,4 @@ new PipelineStack(app, "newsrevealer-pipeline-dev-alt", {
   stage: "stable",
   environment: "stable",
 });
-// trigger build 20220908220907
+// trigger build 20220908225832
