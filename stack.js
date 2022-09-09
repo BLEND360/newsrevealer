@@ -34,7 +34,7 @@ module.exports = class AppStack extends Stack {
         actions: ["s3:GetObject"],
         resources: [
           "arn:aws:s3:::newsrevealer-config/*",
-          "arn:aws:s3:::newsrevealer-me-config-temp/*",
+          "arn:aws:s3:::newsrevealer-me-config/*",
         ],
       })
     );
@@ -43,7 +43,7 @@ module.exports = class AppStack extends Stack {
         actions: ["s3:GetObject"],
         resources: [
           "arn:aws:s3:::newsrevealer-config/*",
-          "arn:aws:s3:::newsrevealer-me-config-temp/*",
+          "arn:aws:s3:::newsrevealer-me-config/*",
         ],
       })
     );
