@@ -63,7 +63,7 @@ export default function GrammarCheckButton({
         clearInterval(id);
       };
     }
-  }, [response]);
+  }, [response, onCorrection]);
 
   return (
     <OverlayTrigger overlay={<Tooltip id="copy-tooltip">{tooltip}</Tooltip>}>
