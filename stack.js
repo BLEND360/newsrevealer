@@ -32,13 +32,19 @@ module.exports = class AppStack extends Stack {
     app.edgeLambdaRole.addToPolicy(
       new PolicyStatement({
         actions: ["s3:GetObject"],
-        resources: ["arn:aws:s3:::newsrevealer-config/*"],
+        resources: [
+          "arn:aws:s3:::newsrevealer-config/*",
+          "arn:aws:s3:::newsrevealer-me-config/*",
+        ],
       })
     );
     app.regenerationFunction.addToRolePolicy(
       new PolicyStatement({
         actions: ["s3:GetObject"],
-        resources: ["arn:aws:s3:::newsrevealer-config/*"],
+        resources: [
+          "arn:aws:s3:::newsrevealer-config/*",
+          "arn:aws:s3:::newsrevealer-me-config/*",
+        ],
       })
     );
     app.edgeLambdaRole.addToPolicy(
@@ -73,10 +79,10 @@ module.exports = class AppStack extends Stack {
       new PolicyStatement({
         actions: ["lambda:InvokeFunction"],
         resources: [
-          "arn:aws:lambda:us-east-1:169196863399:function:avrioc_docker:*",
-          "arn:aws:lambda:us-east-1:169196863399:function:avrioc_grammar_lambda:*",
-        "arn:aws:lambda:us-east-1:169196863399:function:avrioc_summarizer:*",
-                "arn:aws:lambda:us-east-1:169196863399:function:avrioc_topic_classifier:*"
+          "arn:aws:lambda:us-east-1:224306498215:function:avrioc_docker:*",
+          "arn:aws:lambda:us-east-1:224306498215:function:avrioc_grammar_lambda:*",
+          "arn:aws:lambda:us-east-1:224306498215:function:avrioc_summarizer:*",
+          "arn:aws:lambda:us-east-1:224306498215:function:avrioc_topic_classifier:*"
         ],
       })
     );
@@ -84,8 +90,10 @@ module.exports = class AppStack extends Stack {
       new PolicyStatement({
         actions: ["s3:GetObject", "s3:ListBucket"],
         resources: [
-          "arn:aws:s3:::newsrevealer-generation/*",
           "arn:aws:s3:::newsrevealer-generation",
+          "arn:aws:s3:::newsrevealer-generation/*",
+          "arn:aws:s3:::newsrevealer-me-generation",
+          "arn:aws:s3:::newsrevealer-me-generation/*",
         ],
       })
     );

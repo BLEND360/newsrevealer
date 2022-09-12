@@ -32,7 +32,10 @@ module.exports = class PipelineStack extends Stack {
         rolePolicyStatements: [
           new PolicyStatement({
             actions: ["s3:GetObject"],
-            resources: ["arn:aws:s3:::newsrevealer-config/*"],
+            resources: [
+              "arn:aws:s3:::newsrevealer-config/*",
+              "arn:aws:s3:::newsrevealer-me-config/*",
+            ],
           }),
         ],
       }),

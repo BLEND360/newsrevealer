@@ -4,14 +4,19 @@ import {
   S3ServiceException,
 } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
-import {TopicScanResult, GenerateResult, GrammarCheckResult, ResponseError} from "../types";
+import {
+  TopicScanResult,
+  GenerateResult,
+  GrammarCheckResult,
+  ResponseError,
+} from "../types";
 
 const s3Client = new S3Client({ region: "us-east-1" });
 
 export async function getConfig(key: string): Promise<any> {
   const response = await s3Client.send(
     new GetObjectCommand({
-      Bucket: "newsrevealer-config",
+      Bucket: "newsrevealer-me-config",
       Key: key,
     })
   );
@@ -25,7 +30,9 @@ export async function getConfig(key: string): Promise<any> {
 export async function getResults(
   bucket: string,
   key: string
-): Promise<GenerateResult | GrammarCheckResult | TopicScanResult | ResponseError | null> {
+): Promise<
+  GenerateResult | GrammarCheckResult | TopicScanResult | ResponseError | null
+> {
   try {
     const response = await s3Client.send(
       new GetObjectCommand({
