@@ -17,7 +17,7 @@ const te = new TextEncoder();
 export async function invokeGenerate(
   body: GenerateRequest
 ): Promise<AsyncResponse> {
-  const bucket = "newsrevealer-generation";
+  const bucket = "newsrevealer-me-generation";
   const key = crypto.randomUUID();
   const payload: AsyncGenerateRequest = { ...body, bucket, key };
   await lambdaClient.send(
@@ -43,7 +43,7 @@ export async function invokeGenerate(
 export async function invokeScanForTopics(
   body: TopicScanRequest
 ): Promise<AsyncResponse> {
-  const bucket = "newsrevealer-generation";
+  const bucket = "newsrevealer-me-generation";
   const key = crypto.randomUUID();
   const payload: AsyncTopicScanRequest = { ...body, bucket, key };
   await lambdaClient.send(
@@ -65,7 +65,7 @@ export async function invokeScanForTopics(
 export async function invokeGrammarCheck(
   body: GrammarCheckRequest
 ): Promise<AsyncResponse> {
-  const bucket = "newsrevealer-generation";
+  const bucket = "newsrevealer-me-generation";
   const key = crypto.randomUUID();
   const payload: AsyncGrammarCheckRequest = { ...body, bucket, key };
   await lambdaClient.send(
